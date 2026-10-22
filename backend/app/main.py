@@ -8,7 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.database.init_db import init_db
+<<<<<<< HEAD
 from app.routes import assets, auth, health
+=======
+from app.routes import health
+>>>>>>> b6b47a4fd75e03c2aa8d187258382a1dc8411da4
 
 
 @asynccontextmanager
@@ -35,8 +39,11 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router, prefix=settings.api_prefix)
+<<<<<<< HEAD
     app.include_router(auth.router, prefix=settings.api_prefix)
     app.include_router(assets.router, prefix=settings.api_prefix)
+=======
+>>>>>>> b6b47a4fd75e03c2aa8d187258382a1dc8411da4
     return app
 
 
