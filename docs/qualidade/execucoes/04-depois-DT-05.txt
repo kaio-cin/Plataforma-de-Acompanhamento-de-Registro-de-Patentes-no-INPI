@@ -1,0 +1,6 @@
+# Depois de DT-05 (Introduce Parameter Object NewAsset; mapeamento movido para a rota)
+# commit base: bbcca52  |  2026-11-13 22:05
+$ pytest   # suíte padrão: tests/test_*.py (Sprint 2 + caracterização) + tests/v2
+........................................................................ [ 50%]
+.......................................xxxxxx.x.......................   [100%]
+135 passed, 7 xfailed in 124.02s (0:02:04)

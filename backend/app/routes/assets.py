@@ -29,7 +29,7 @@ def list_assets(db: DbSession, user: CurrentUser) -> Sequence[Asset]:
 )
 def create_asset(data: AssetCreate, db: DbSession, _user: NitUser) -> Asset:
     try:
-        return asset_service.create_asset(db, data)
+        return asset_service.create_asset(db, asset_service.NewAsset(**data.model_dump()))
     except asset_service.DuplicateProcessError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     except asset_service.AuthorNotFoundError as exc:

@@ -1,14 +1,32 @@
 """Regras de negócio da carteira de ativos, independentes da camada HTTP."""
 
 from collections.abc import Sequence
+from dataclasses import dataclass
+from datetime import date
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
-from app.models import Asset, User, UserRole
-from app.schemas.asset import AssetCreate
+from app.models import Asset, AssetType, User, UserRole
 from app.services.auth_service import get_user_by_email
+
+
+@dataclass(frozen=True)
+class NewAsset:
+    """Dados de um novo ativo, como a regra de negócio os entende (US04, US07).
+
+    O service define o que precisa receber; quem chama (a rota HTTP hoje, o coletor da RPI
+    amanhã) converte o próprio formato para este. Assim o service não depende do schema da API.
+    """
+
+    title: str
+    asset_type: AssetType
+    process_number: str
+    deposit_date: date
+    status: str
+    authors: str
+    author_email: str | None = None
 
 
 class AssetServiceError(Exception):
@@ -31,7 +49,7 @@ def list_assets_for(db: Session, user: User) -> Sequence[Asset]:
     return db.scalars(query).all()
 
 
-def create_asset(db: Session, data: AssetCreate) -> Asset:
+def create_asset(db: Session, data: NewAsset) -> Asset:
     """Cadastra um novo ativo (US04), opcionalmente vinculando um autor (US07)."""
     if db.scalar(select(Asset.id).where(Asset.process_number == data.process_number)) is not None:
         raise DuplicateProcessError(f"Já existe um ativo cadastrado com o processo {data.process_number}.")
@@ -42,7 +60,15 @@ def create_asset(db: Session, data: AssetCreate) -> Asset:
         if author_user is None or author_user.role != UserRole.AUTOR:
             raise AuthorNotFoundError(f"Nenhum usuário com perfil AUTOR encontrado com o e-mail {data.author_email}.")
 
-    asset = Asset(**data.model_dump(exclude={"author_email"}), author_user=author_user)
+    asset = Asset(
+        title=data.title,
+        asset_type=data.asset_type,
+        process_number=data.process_number,
+        deposit_date=data.deposit_date,
+        status=data.status,
+        authors=data.authors,
+        author_user=author_user,
+    )
     db.add(asset)
     try:
         db.commit()
