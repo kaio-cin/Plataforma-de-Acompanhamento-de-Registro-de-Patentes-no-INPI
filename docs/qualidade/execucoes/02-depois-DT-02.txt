@@ -1,0 +1,6 @@
+# Depois de DT-02 (Extract Function: enum_column_type)
+# commit base: 52b133d  |  2026-11-13 21:59
+$ pytest   # suíte padrão: tests/test_*.py (Sprint 2 + caracterização) + tests/v2
+........................................................................ [ 50%]
+.......................................xxxxxx.x.......................   [100%]
+135 passed, 7 xfailed in 126.89s (0:02:06)

@@ -1,0 +1,8 @@
+# Verificação da rede de proteção do DT-02 (feita antes do commit e desfeita em seguida)
+# Mutação proposital: remover a linha "values_callable=..." de app/models/columns.py
+$ pytest tests/v2/test_v2_ativos.py          # testes de API do cadastro/listagem
+53 passed                                    # -> a suíte de API NÃO percebe a mudança
+$ pytest tests/test_esquema_banco.py         # testes de caracterização (commit 16bfd9f)
+FAILED tests/test_esquema_banco.py::test_ddl_da_tabela_assets_nao_muda
+FAILED tests/test_esquema_banco.py::test_enums_gravam_o_valor_e_nao_o_nome
+2 failed, 4 passed                           # -> a caracterização pega a mudança de formato no banco

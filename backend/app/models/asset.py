@@ -4,10 +4,10 @@ from datetime import date
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Date, ForeignKey, Integer, String
-from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+from app.models.columns import enum_column_type
 from app.models.enums import AssetType
 from app.models.limits import (
     ASSET_TYPE_MAX_LENGTH,
@@ -29,14 +29,7 @@ class Asset(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(TITLE_MAX_LENGTH))
     asset_type: Mapped[AssetType] = mapped_column(
-        SAEnum(
-            AssetType,
-            name="asset_type",
-            native_enum=False,
-            create_constraint=True,
-            values_callable=lambda enum: [member.value for member in enum],
-            length=ASSET_TYPE_MAX_LENGTH,
-        )
+        enum_column_type(AssetType, name="asset_type", length=ASSET_TYPE_MAX_LENGTH)
     )
     # Número do processo no INPI (ex.: "BR 10 2023 001234-5"). É a chave usada
     # no cruzamento com os despachos da RPI (Step 3), por isso é único e indexado.
