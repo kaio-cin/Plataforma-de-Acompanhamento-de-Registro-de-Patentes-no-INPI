@@ -3,3 +3,4 @@
 
 pytest==9.1.1
 httpx2==2.13.1  # cliente HTTP usado pelo TestClient do FastAPI
+pytest-cov==7.1.0  # cobertura de linhas e branches (coverage.py), Sprint 3
