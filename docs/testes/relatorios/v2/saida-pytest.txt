@@ -1,0 +1,30 @@
+........................................................................ [ 69%]
+xxxxxx.x.......................                                          [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
+
+Name                            Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------
+app/core/security.py               19      0      0      0   100%
+app/routes/assets.py               18      0      0      0   100%
+app/routes/auth.py                 26      0      4      0   100%
+app/routes/deps.py                 28      0      6      0   100%
+app/schemas/asset.py               40      0      4      0   100%
+app/schemas/auth.py                14      0      0      0   100%
+app/services/asset_service.py      34      0      8      0   100%
+app/services/auth_service.py       17      0      4      0   100%
+---------------------------------------------------------------------------
+TOTAL                             196      0     26      0   100%
+
+5 empty files skipped.
+Coverage HTML written to dir ../docs/testes/relatorios/v2/html
+Coverage JSON written to file ../docs/testes/relatorios/v2/coverage.json
+=========================== short test summary info ============================
+XFAIL tests/v2/test_v2_lacunas.py::test_campo_so_com_espacos_retorna_422[title-     ] - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+XFAIL tests/v2/test_v2_lacunas.py::test_campo_so_com_espacos_retorna_422[process_number-       ] - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+XFAIL tests/v2/test_v2_lacunas.py::test_campo_so_com_espacos_retorna_422[status-    ] - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+XFAIL tests/v2/test_v2_lacunas.py::test_campo_so_com_espacos_retorna_422[authors-    ] - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+XFAIL tests/v2/test_v2_lacunas.py::test_cadastro_invalido_nao_deixa_a_carteira_indisponivel - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+XFAIL tests/v2/test_v2_lacunas.py::test_titulo_com_2_caracteres_efetivos_retorna_422 - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+XFAIL tests/v2/test_v2_lacunas.py::test_titulo_com_500_caracteres_efetivos_e_espacos_nas_bordas_e_aceito - BUG-01: tamanho mínimo é validado antes de normalizar os espaços (docs/testes/defeitos.md)
+96 passed, 7 xfailed in 100.74s (0:01:40)
