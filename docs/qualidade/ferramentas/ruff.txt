@@ -1,0 +1,14 @@
+$ ruff check app --select C90,PLR0911,PLR0912,PLR0913,PLR0915,PLR2004,SIM,ARG,RET,PIE,ERA --config "lint.mccabe.max-complexity = 5" --config "lint.pylint.max-args = 4"
+All checks passed!
+
+$ ruff check app --select ALL (ignorando regras de documentação/estilo: D, ANN, COM, E501, ERA, FA, TD, FIX, EM, TRY003, RUF001-003, INP, T201, S105, S106, CPY001)
+app/database/init_db.py:13:5: PLC0415 `import` should be at the top-level of a file
+app/models/asset.py:3:22: TC003 Move standard library import `datetime.date` into a type-checking block
+app/models/enums.py:6:7: UP042 Class UserRole inherits from both `str` and `enum.Enum`
+app/models/enums.py:13:7: UP042 Class AssetType inherits from both `str` and `enum.Enum`
+app/routes/auth.py:24:24: FAST001 FastAPI route with redundant `response_model` argument
+app/routes/auth.py:35:5: FAST001 FastAPI route with redundant `response_model` argument
+app/schemas/asset.py:48:20: DTZ011 `datetime.date.today()` used
+app/seed.py:99:5: PLC0415 `import` should be at the top-level of a file
+Found 8 errors.
+5 unsafe fixes available with `--fix --unsafe-fixes`.

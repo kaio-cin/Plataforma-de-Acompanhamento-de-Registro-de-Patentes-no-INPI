@@ -1,0 +1,71 @@
+app/main.py
+    F 21:0 create_app - A (2)
+    F 15:0 lifespan - A (1)
+app/seed.py
+    F 76:0 seed - B (8)
+    F 105:0 main - A (3)
+    F 97:0 reset_db - A (1)
+app/database/init_db.py
+    F 11:0 init_db - A (1)
+app/database/session.py
+    F 20:4 _enable_sqlite_foreign_keys - A (1)
+    F 33:0 get_db - A (1)
+    C 29:0 Base - A (1)
+app/services/auth_service.py
+    F 18:0 authenticate - A (3)
+    F 14:0 get_user_by_email - A (1)
+    F 28:0 issue_token - A (1)
+app/services/asset_service.py
+    F 34:0 create_asset - B (6)
+    F 26:0 list_assets_for - A (2)
+    C 14:0 AssetServiceError - A (1)
+    C 18:0 DuplicateProcessError - A (1)
+    C 22:0 AuthorNotFoundError - A (1)
+app/schemas/asset.py
+    C 38:0 AssetCreate - A (4)
+    M 54:4 AssetCreate._empty_email_as_none - A (3)
+    C 13:0 AssetBase - A (2)
+    M 47:4 AssetCreate._not_in_future - A (2)
+    F 9:0 _collapse_spaces - A (1)
+    M 28:4 AssetBase._strip - A (1)
+    M 33:4 AssetBase._normalize_process_number - A (1)
+    C 61:0 AssetRead - A (1)
+app/schemas/auth.py
+    C 6:0 LoginRequest - A (1)
+    C 11:0 UserRead - A (1)
+    C 19:0 TokenResponse - A (1)
+app/models/asset.py
+    C 17:0 Asset - A (3)
+    M 50:4 Asset.author_email - A (2)
+    M 54:4 Asset.__repr__ - A (1)
+app/models/enums.py
+    C 6:0 UserRole - A (1)
+    C 13:0 AssetType - A (1)
+app/models/user.py
+    C 16:0 User - A (3)
+    M 41:4 User.__repr__ - A (1)
+app/core/config.py
+    C 10:0 Settings - B (6)
+    M 31:4 Settings._split_origins - A (5)
+    F 41:0 get_settings - A (1)
+app/core/security.py
+    F 22:0 create_access_token - A (2)
+    F 34:0 decode_access_token - A (2)
+    F 14:0 hash_password - A (1)
+    F 18:0 verify_password - A (1)
+app/routes/auth.py
+    F 25:0 login - A (2)
+    F 38:0 login_form - A (2)
+    F 20:0 _token_response - A (1)
+    F 47:0 read_current_user - A (1)
+app/routes/assets.py
+    F 30:0 create_asset - A (3)
+    F 14:0 list_assets - A (1)
+app/routes/deps.py
+    F 21:0 get_current_user - A (4)
+    F 40:0 require_roles - A (1)
+app/routes/health.py
+    F 7:0 health_check - A (1)
+
+51 blocks (classes, functions, methods) analyzed.
+Average complexity: A (1.9411764705882353)

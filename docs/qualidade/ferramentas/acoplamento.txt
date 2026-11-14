@@ -1,0 +1,25 @@
+módulo                           Ce(sai) Ca(entra)  depende de
+app.seed                            4        0      app.core.security, app.database, app.database.init_db, app.models
+app.routes.auth                     4        0      app.models, app.routes.deps, app.schemas.auth, app.services
+app.routes.assets                   4        0      app.models, app.routes.deps, app.schemas.asset, app.services
+app.routes.deps                     4        2      app.core.config, app.core.security, app.database, app.models
+app.main                            3        0      app.core.config, app.database.init_db, app.routes
+app.services.asset_service          3        0      app.models, app.schemas.asset, app.services.auth_service
+app.models.asset                    3        2      app.database, app.models.enums, app.models.user
+app.models                          3        7      app.models.asset, app.models.enums, app.models.user
+app.models.user                     3        2      app.database, app.models.asset, app.models.enums
+app.database.init_db                2        2      app.database.session, app.models
+app.services.auth_service           2        1      app.core.security, app.models
+app.database                        1        4      app.database.session
+app.database.session                1        2      app.core.config
+app.schemas.asset                   1        2      app.models.enums
+app.schemas.auth                    1        1      app.models.enums
+app.core.security                   1        3      app.core.config
+app                                 0        0      
+app.services                        0        2      
+app.schemas                         0        0      
+app.models.enums                    0        5      
+app.core.config                     0        4      
+app.core                            0        0      
+app.routes                          0        1      
+app.routes.health                   0        0      
