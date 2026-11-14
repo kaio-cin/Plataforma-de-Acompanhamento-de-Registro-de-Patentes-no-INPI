@@ -1,0 +1,23 @@
+# Verificação final após DT-01, DT-02, DT-03 e DT-05
+# commit base: 33f80f1
+$ pytest tests/v2 --cov --cov-report=term-missing
+Name                            Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------
+app/core/security.py               19      0      0      0   100%
+app/routes/assets.py               18      0      0      0   100%
+app/routes/auth.py                 25      0      2      0   100%
+app/routes/deps.py                 28      0      6      0   100%
+app/schemas/asset.py               41      0      4      0   100%
+app/schemas/auth.py                14      0      0      0   100%
+app/services/asset_service.py      44      0      8      0   100%
+app/services/auth_service.py       17      0      4      0   100%
+---------------------------------------------------------------------------
+TOTAL                             206      0     24      0   100%
+96 passed, 7 xfailed in 102.38s (0:01:42)
+
+$ pytest tests/v1-llm   # v1 preservada: mesmo resultado de antes das refatorações
+1 failed, 91 passed in 90.66s (0:01:30)
+
+$ ruff check app && radon cc -s -a app | tail -1
+All checks passed!
+Average complexity: A (1.8703703703703705)
