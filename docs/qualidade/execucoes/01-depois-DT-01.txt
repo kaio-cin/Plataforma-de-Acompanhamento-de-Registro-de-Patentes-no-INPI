@@ -1,0 +1,6 @@
+# Depois de DT-01 (Replace Magic Literal)
+# commit base: 16bfd9f  |  2026-11-13 21:56
+$ pytest   # suíte padrão: tests/test_*.py (Sprint 2 + caracterização) + tests/v2
+........................................................................ [ 50%]
+.......................................xxxxxx.x.......................   [100%]
+135 passed, 7 xfailed in 126.87s (0:02:06)

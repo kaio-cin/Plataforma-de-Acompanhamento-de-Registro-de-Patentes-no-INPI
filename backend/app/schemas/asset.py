@@ -4,6 +4,16 @@ from datetime import date
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from app.models.enums import AssetType
+from app.models.limits import (
+    AUTHORS_MAX_LENGTH,
+    AUTHORS_MIN_LENGTH,
+    PROCESS_NUMBER_MAX_LENGTH,
+    PROCESS_NUMBER_MIN_LENGTH,
+    STATUS_MAX_LENGTH,
+    STATUS_MIN_LENGTH,
+    TITLE_MAX_LENGTH,
+    TITLE_MIN_LENGTH,
+)
 
 
 def _collapse_spaces(value: str) -> str:
@@ -11,14 +21,22 @@ def _collapse_spaces(value: str) -> str:
 
 
 class AssetBase(BaseModel):
-    title: str = Field(min_length=3, max_length=500, examples=["Sistema de irrigação automatizada por sensores"])
+    title: str = Field(
+        min_length=TITLE_MIN_LENGTH,
+        max_length=TITLE_MAX_LENGTH,
+        examples=["Sistema de irrigação automatizada por sensores"],
+    )
     asset_type: AssetType = Field(examples=[AssetType.PATENTE])
-    process_number: str = Field(min_length=5, max_length=50, examples=["BR 10 2023 001234-5"])
+    process_number: str = Field(
+        min_length=PROCESS_NUMBER_MIN_LENGTH,
+        max_length=PROCESS_NUMBER_MAX_LENGTH,
+        examples=["BR 10 2023 001234-5"],
+    )
     deposit_date: date = Field(examples=["2023-03-12"])
-    status: str = Field(min_length=2, max_length=100, examples=["Em exame"])
+    status: str = Field(min_length=STATUS_MIN_LENGTH, max_length=STATUS_MAX_LENGTH, examples=["Em exame"])
     authors: str = Field(
-        min_length=2,
-        max_length=1000,
+        min_length=AUTHORS_MIN_LENGTH,
+        max_length=AUTHORS_MAX_LENGTH,
         description="Inventores/autores separados por vírgula.",
         examples=["Fernanda Lima Costa, Rodrigo A. Nascimento"],
     )

@@ -9,6 +9,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 from app.models.enums import AssetType
+from app.models.limits import (
+    ASSET_TYPE_MAX_LENGTH,
+    AUTHORS_MAX_LENGTH,
+    PROCESS_NUMBER_MAX_LENGTH,
+    STATUS_MAX_LENGTH,
+    TITLE_MAX_LENGTH,
+)
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -20,7 +27,7 @@ class Asset(Base):
     __tablename__ = "assets"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String(500))
+    title: Mapped[str] = mapped_column(String(TITLE_MAX_LENGTH))
     asset_type: Mapped[AssetType] = mapped_column(
         SAEnum(
             AssetType,
@@ -28,16 +35,16 @@ class Asset(Base):
             native_enum=False,
             create_constraint=True,
             values_callable=lambda enum: [member.value for member in enum],
-            length=40,
+            length=ASSET_TYPE_MAX_LENGTH,
         )
     )
     # Número do processo no INPI (ex.: "BR 10 2023 001234-5"). É a chave usada
     # no cruzamento com os despachos da RPI (Step 3), por isso é único e indexado.
-    process_number: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    process_number: Mapped[str] = mapped_column(String(PROCESS_NUMBER_MAX_LENGTH), unique=True, index=True)
     deposit_date: Mapped[date] = mapped_column(Date)
-    status: Mapped[str] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(STATUS_MAX_LENGTH))
     # Nomes dos inventores/autores conforme o depósito, separados por vírgula.
-    authors: Mapped[str] = mapped_column(String(1000))
+    authors: Mapped[str] = mapped_column(String(AUTHORS_MAX_LENGTH))
 
     # Autor com acesso de acompanhamento ao processo (opcional — US07).
     # SET NULL: se o usuário for removido, o ativo continua cadastrado.

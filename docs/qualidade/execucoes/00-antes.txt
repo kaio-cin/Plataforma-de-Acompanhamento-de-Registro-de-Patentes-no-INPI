@@ -1,0 +1,5 @@
+# Antes das refatorações (suíte v2 + Sprint 2 + caracterização)
+# commit base: 16bfd9f
+$ pytest
+.......................................xxxxxx.x.......................   [100%]
+135 passed, 7 xfailed in 127.13s (0:02:07)
