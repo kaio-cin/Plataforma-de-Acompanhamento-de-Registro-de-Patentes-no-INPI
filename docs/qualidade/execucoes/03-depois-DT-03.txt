@@ -1,0 +1,6 @@
+# Depois de DT-03 (Extract Function _login + fábrica de exceção)
+# commit base: 202b08a  |  2026-11-13 22:03
+$ pytest   # suíte padrão: tests/test_*.py (Sprint 2 + caracterização) + tests/v2
+........................................................................ [ 50%]
+.......................................xxxxxx.x.......................   [100%]
+135 passed, 7 xfailed in 126.59s (0:02:06)

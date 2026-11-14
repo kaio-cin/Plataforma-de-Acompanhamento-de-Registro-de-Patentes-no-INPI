@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 
 from app.models import User
 from app.routes.deps import CurrentUser, DbSession
@@ -10,24 +11,29 @@ from app.services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["Autenticação"])
 
-_INVALID_CREDENTIALS = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="E-mail ou senha incorretos.",
-    headers={"WWW-Authenticate": "Bearer"},
-)
+
+def _invalid_credentials() -> HTTPException:
+    # Uma exceção nova por requisição (como em deps.py): reutilizar a mesma instância
+    # carregaria o __traceback__/__context__ de uma requisição para a seguinte.
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="E-mail ou senha incorretos.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
-def _token_response(user: User) -> TokenResponse:
+def _login(db: Session, email: str, password: str) -> TokenResponse:
+    """Fluxo único de login, usado pelo JSON e pelo formulário OAuth2."""
+    user = auth_service.authenticate(db, email, password)
+    if user is None:
+        raise _invalid_credentials()
     return TokenResponse(access_token=auth_service.issue_token(user), user=UserRead.model_validate(user))
 
 
 @router.post("/login", response_model=TokenResponse, summary="Login com e-mail e senha (US01, US02)")
 def login(credentials: LoginRequest, db: DbSession) -> TokenResponse:
     """Recebe JSON com e-mail e senha e devolve o token JWT com o perfil do usuário."""
-    user = auth_service.authenticate(db, credentials.email, credentials.password)
-    if user is None:
-        raise _INVALID_CREDENTIALS
-    return _token_response(user)
+    return _login(db, credentials.email, credentials.password)
 
 
 @router.post(
@@ -37,10 +43,7 @@ def login(credentials: LoginRequest, db: DbSession) -> TokenResponse:
 )
 def login_form(form: Annotated[OAuth2PasswordRequestForm, Depends()], db: DbSession) -> TokenResponse:
     # No formulário OAuth2 o campo se chama "username"; aqui ele recebe o e-mail.
-    user = auth_service.authenticate(db, form.username, form.password)
-    if user is None:
-        raise _INVALID_CREDENTIALS
-    return _token_response(user)
+    return _login(db, form.username, form.password)
 
 
 @router.get("/me", response_model=UserRead, summary="Dados do usuário logado")
