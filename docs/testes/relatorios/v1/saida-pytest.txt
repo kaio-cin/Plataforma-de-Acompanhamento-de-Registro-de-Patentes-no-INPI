@@ -1,0 +1,166 @@
+.............F.......................................................... [ 78%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_titulo_com_menos_de_3_caracteres_efetivos_retorna_422 __________
+
+client = <starlette.testclient.TestClient object at 0x7ff18614cad0>
+nit_headers = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzk0NjE2NTE1LCJleHAiOjE3OTQ2NDUzMTUsInJvbGUiOiJOSVQiLCJlbWFpbCI6Im5pdEB0ZXN0ZS5lZHUuYnIifQ.lREiHwzZIzERFE4raSE6mgzFoGnjwDW6b237LcLgj30'}
+
+    def test_titulo_com_menos_de_3_caracteres_efetivos_retorna_422(client: TestClient, nit_headers) -> None:
+>       response = _cadastrar(client, nit_headers, title=" ab ")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/v1-llm/test_v1_ativos.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/v1-llm/test_v1_ativos.py:32: in _cadastrar
+    return client.post(ASSETS_URL, json={**ATIVO_VALIDO, **campos}, headers=headers)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:1204: in post
+    return self.request(
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:518: in request
+    return super().request(
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:797: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:994: in send
+    raise exc
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:988: in send
+    response.read()
+../../../venv/lib/python3.13/site-packages/httpx2/_models.py:876: in read
+    self._content = b"".join(self.iter_bytes())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_models.py:892: in iter_bytes
+    for raw_bytes in self.iter_raw():
+                     ^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_models.py:947: in iter_raw
+    for raw_stream_bytes in self.stream:
+                            ^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:143: in __iter__
+    yield from self._stream
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:384: in iter_body
+    exit_stack.close()
+/usr/local/lib/python3.13/contextlib.py:627: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.13/contextlib.py:619: in __exit__
+    raise exc
+/usr/local/lib/python3.13/contextlib.py:604: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:399: in close_app
+    raise exception
+../../../venv/lib/python3.13/site-packages/anyio/from_thread.py:272: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:366: in run_app
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/applications.py:1216: in __call__
+    await super().__call__(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../../../venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../../../venv/lib/python3.13/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/cors.py:91: in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/cors.py:149: in simple_response
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../../../venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/routing.py:683: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:2786: in app
+    await route.handle(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:1817: in handle
+    await self.original_router.handle(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:2869: in handle
+    await included_router._handle_selected(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:1843: in _handle_selected
+    await original_route.handle(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:1308: in handle
+    await effective_context.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:165: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:151: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:749: in app
+    content = await serialize_response(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+field = ModelField(field_info=FieldInfo(annotation=AssetRead, required=True), name='Response_create_asset_api_assets__post', mode='serialization', config=None)
+response_content = <Asset id=1 process='BR 10 2025 000999-9' type=Patente>
+include = None, exclude = None, by_alias = True, exclude_unset = False
+exclude_defaults = False, exclude_none = False, is_coroutine = False
+endpoint_ctx = {'file': '/home/claude/kaio-cin/plataforma-de-acompanhamento-de-registro-de-patentes-no-inpi/backend/app/routes/assets.py', 'line': 19, 'function': 'create_asset', 'path': 'POST /api/assets/'}
+dump_json = True
+
+    async def serialize_response(
+        *,
+        field: ModelField | None = None,
+        response_content: Any,
+        include: IncEx | None = None,
+        exclude: IncEx | None = None,
+        by_alias: bool = True,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        is_coroutine: bool = True,
+        endpoint_ctx: EndpointContext | None = None,
+        dump_json: bool = False,
+    ) -> Any:
+        if field:
+            if is_coroutine:
+                value, errors = field.validate(response_content, {}, loc=("response",))
+            else:
+                value, errors = await run_in_threadpool(
+                    field.validate, response_content, {}, loc=("response",)
+                )
+            if errors:
+                ctx = endpoint_ctx or EndpointContext()
+>               raise ResponseValidationError(
+                    errors=errors,
+                    body=response_content,
+                    endpoint_ctx=ctx,
+                )
+E               fastapi.exceptions.ResponseValidationError: 1 validation error:
+E                 {'type': 'string_too_short', 'loc': ('response', 'title'), 'msg': 'String should have at least 3 characters', 'input': 'ab', 'ctx': {'min_length': 3}}
+E               
+E                 File "/home/claude/kaio-cin/plataforma-de-acompanhamento-de-registro-de-patentes-no-inpi/backend/app/routes/assets.py", line 19, in create_asset
+E                   POST /api/assets/
+
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:331: ResponseValidationError
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.18-final-0 _______________
+
+Name                            Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------
+app/core/security.py               19      0      0      0   100%
+app/routes/assets.py               18      0      0      0   100%
+app/routes/auth.py                 26      0      4      0   100%
+app/routes/deps.py                 28      0      6      0   100%
+app/schemas/asset.py               40      0      4      0   100%
+app/schemas/auth.py                14      0      0      0   100%
+app/services/asset_service.py      34      3      8      0    93%   49-52
+app/services/auth_service.py       17      0      4      0   100%
+---------------------------------------------------------------------------
+TOTAL                             196      3     26      0    99%
+
+5 empty files skipped.
+Coverage HTML written to dir ../docs/testes/relatorios/v1/html
+Coverage JSON written to file ../docs/testes/relatorios/v1/coverage.json
+=========================== short test summary info ============================
+FAILED tests/v1-llm/test_v1_ativos.py::test_titulo_com_menos_de_3_caracteres_efetivos_retorna_422
+1 failed, 91 passed in 89.38s (0:01:29)

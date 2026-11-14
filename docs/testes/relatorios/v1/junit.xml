@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="92" time="89.383" timestamp="2026-11-13T21:35:01.067535-03:00" hostname="vm"><testcase classname="tests.v1-llm.test_v1_ativos" name="test_cadastro_valido_retorna_201_com_dados" time="1.109" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_ativo_cadastrado_aparece_na_listagem" time="0.944" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_naturezas_validas_sao_aceitas[Patente]" time="1.041" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_naturezas_validas_sao_aceitas[Programa de Computador]" time="1.024" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_natureza_invalida_retorna_422[Marca]" time="0.879" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_natureza_invalida_retorna_422[patente]" time="1.080" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_natureza_invalida_retorna_422[Desenho Industrial]" time="1.094" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_natureza_invalida_retorna_422[]" time="0.994" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_titulo[2-422]" time="1.032" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_titulo[3-201]" time="1.088" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_titulo[500-201]" time="0.989" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_titulo[501-422]" time="0.958" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_titulo_tem_espacos_normalizados" time="1.094" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_titulo_com_menos_de_3_caracteres_efetivos_retorna_422" time="1.078"><failure message="fastapi.exceptions.ResponseValidationError: 1 validation error:&#10;  {'type': 'string_too_short', 'loc': ('response', 'title'), 'msg': 'String should have at least 3 characters', 'input': 'ab', 'ctx': {'min_length': 3}}&#10;&#10;  File &quot;/home/claude/kaio-cin/plataforma-de-acompanhamento-de-registro-de-patentes-no-inpi/backend/app/routes/assets.py&quot;, line 19, in create_asset&#10;    POST /api/assets/">client = &lt;starlette.testclient.TestClient object at 0x7ff18614cad0&gt;
+nit_headers = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzk0NjE2NTE1LCJleHAiOjE3OTQ2NDUzMTUsInJvbGUiOiJOSVQiLCJlbWFpbCI6Im5pdEB0ZXN0ZS5lZHUuYnIifQ.lREiHwzZIzERFE4raSE6mgzFoGnjwDW6b237LcLgj30'}
+
+    def test_titulo_com_menos_de_3_caracteres_efetivos_retorna_422(client: TestClient, nit_headers) -&gt; None:
+&gt;       response = _cadastrar(client, nit_headers, title=" ab ")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/v1-llm/test_v1_ativos.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/v1-llm/test_v1_ativos.py:32: in _cadastrar
+    return client.post(ASSETS_URL, json={**ATIVO_VALIDO, **campos}, headers=headers)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:1204: in post
+    return self.request(
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:518: in request
+    return super().request(
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:797: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:994: in send
+    raise exc
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:988: in send
+    response.read()
+../../../venv/lib/python3.13/site-packages/httpx2/_models.py:876: in read
+    self._content = b"".join(self.iter_bytes())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_models.py:892: in iter_bytes
+    for raw_bytes in self.iter_raw():
+                     ^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_models.py:947: in iter_raw
+    for raw_stream_bytes in self.stream:
+                            ^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/httpx2/_client.py:143: in __iter__
+    yield from self._stream
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:384: in iter_body
+    exit_stack.close()
+/usr/local/lib/python3.13/contextlib.py:627: in close
+    self.__exit__(None, None, None)
+/usr/local/lib/python3.13/contextlib.py:619: in __exit__
+    raise exc
+/usr/local/lib/python3.13/contextlib.py:604: in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:399: in close_app
+    raise exception
+../../../venv/lib/python3.13/site-packages/anyio/from_thread.py:272: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/starlette/testclient.py:366: in run_app
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/applications.py:1216: in __call__
+    await super().__call__(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/applications.py:96: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
+    raise exc
+../../../venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+../../../venv/lib/python3.13/site-packages/fastapi/telemetry/_asgi.py:151: in __call__
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/cors.py:91: in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/cors.py:149: in simple_response
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../../../venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/routing.py:683: in __call__
+    await self.middleware_stack(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:2786: in app
+    await route.handle(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:1817: in handle
+    await self.original_router.handle(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:2869: in handle
+    await included_router._handle_selected(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:1843: in _handle_selected
+    await original_route.handle(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:1308: in handle
+    await effective_context.app(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:165: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
+    raise exc
+../../../venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:151: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:749: in app
+    content = await serialize_response(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+field = ModelField(field_info=FieldInfo(annotation=AssetRead, required=True), name='Response_create_asset_api_assets__post', mode='serialization', config=None)
+response_content = &lt;Asset id=1 process='BR 10 2025 000999-9' type=Patente&gt;
+include = None, exclude = None, by_alias = True, exclude_unset = False
+exclude_defaults = False, exclude_none = False, is_coroutine = False
+endpoint_ctx = {'file': '/home/claude/kaio-cin/plataforma-de-acompanhamento-de-registro-de-patentes-no-inpi/backend/app/routes/assets.py', 'line': 19, 'function': 'create_asset', 'path': 'POST /api/assets/'}
+dump_json = True
+
+    async def serialize_response(
+        *,
+        field: ModelField | None = None,
+        response_content: Any,
+        include: IncEx | None = None,
+        exclude: IncEx | None = None,
+        by_alias: bool = True,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        is_coroutine: bool = True,
+        endpoint_ctx: EndpointContext | None = None,
+        dump_json: bool = False,
+    ) -&gt; Any:
+        if field:
+            if is_coroutine:
+                value, errors = field.validate(response_content, {}, loc=("response",))
+            else:
+                value, errors = await run_in_threadpool(
+                    field.validate, response_content, {}, loc=("response",)
+                )
+            if errors:
+                ctx = endpoint_ctx or EndpointContext()
+&gt;               raise ResponseValidationError(
+                    errors=errors,
+                    body=response_content,
+                    endpoint_ctx=ctx,
+                )
+E               fastapi.exceptions.ResponseValidationError: 1 validation error:
+E                 {'type': 'string_too_short', 'loc': ('response', 'title'), 'msg': 'String should have at least 3 characters', 'input': 'ab', 'ctx': {'min_length': 3}}
+E               
+E                 File "/home/claude/kaio-cin/plataforma-de-acompanhamento-de-registro-de-patentes-no-inpi/backend/app/routes/assets.py", line 19, in create_asset
+E                   POST /api/assets/
+
+../../../venv/lib/python3.13/site-packages/fastapi/routing.py:331: ResponseValidationError</failure></testcase><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_processo[4-422]" time="0.963" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_processo[5-201]" time="0.989" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_processo[50-201]" time="0.985" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_do_processo[51-422]" time="1.007" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_numero_do_processo_e_normalizado" time="1.068" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_processo_duplicado_retorna_409" time="1.000" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_processo_duplicado_apos_normalizacao_retorna_409" time="1.018" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_data_de_deposito_hoje_e_aceita" time="1.022" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_data_de_deposito_amanha_retorna_422" time="0.963" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_data_de_deposito_invalida_retorna_422[2023-02-30]" time="1.078" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_data_de_deposito_invalida_retorna_422[12/03/2023]" time="1.036" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_data_de_deposito_invalida_retorna_422[ontem]" time="1.053" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_da_situacao[1-422]" time="1.060" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_da_situacao[2-201]" time="0.959" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_da_situacao[100-201]" time="1.091" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_da_situacao[101-422]" time="0.888" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_dos_autores[1-422]" time="1.039" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_dos_autores[2-201]" time="1.079" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_dos_autores[1000-201]" time="1.090" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_limites_de_tamanho_dos_autores[1001-422]" time="1.155" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_campo_obrigatorio_ausente_retorna_422[title]" time="1.095" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_campo_obrigatorio_ausente_retorna_422[asset_type]" time="0.980" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_campo_obrigatorio_ausente_retorna_422[process_number]" time="0.950" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_campo_obrigatorio_ausente_retorna_422[deposit_date]" time="1.056" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_campo_obrigatorio_ausente_retorna_422[status]" time="1.027" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_campo_obrigatorio_ausente_retorna_422[authors]" time="1.065" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_nit_ve_todos_os_ativos" time="1.044" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_listagem_ordenada_por_data_de_deposito_decrescente" time="1.088" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_itens_da_listagem_trazem_campos_esperados" time="1.065" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_carteira_vazia_retorna_lista_vazia" time="0.964" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_vincular_autor_existente" time="1.237" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_ativo_vinculado_nao_aparece_para_outro_autor" time="1.102" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_vincular_email_inexistente_retorna_422_e_nao_grava" time="0.885" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_vincular_usuario_nit_como_autor_retorna_422" time="0.844" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_email_de_autor_vazio_cria_sem_vinculo[None]" time="0.902" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_email_de_autor_vazio_cria_sem_vinculo[]" time="1.028" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_email_de_autor_vazio_cria_sem_vinculo[   ]" time="1.012" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_vincular_autor_com_email_em_maiusculas" time="1.097" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_email_de_autor_malformado_retorna_422[nao-e-email]" time="1.082" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_email_de_autor_malformado_retorna_422[autora@]" time="1.029" /><testcase classname="tests.v1-llm.test_v1_ativos" name="test_email_de_autor_malformado_retorna_422[autora teste@teste.edu.br]" time="1.045" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_nit_com_credenciais_corretas_retorna_token_e_perfil" time="1.003" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_token_emitido_contem_sub_e_role" time="1.034" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_senha_incorreta_retorna_401" time="0.969" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_email_inexistente_retorna_mesma_mensagem" time="1.038" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_mensagens_de_erro_de_login_sao_identicas" time="1.189" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_ignora_maiusculas_no_email[NIT@teste.edu.br]" time="1.040" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_ignora_maiusculas_no_email[Nit@Teste.Edu.Br]" time="0.975" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_ignora_maiusculas_no_email[NIT@TESTE.EDU.BR]" time="0.839" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_email_malformado_retorna_422[nao-e-email]" time="0.629" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_email_malformado_retorna_422[sem-arroba.com]" time="0.642" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_email_malformado_retorna_422[@teste.edu.br]" time="0.792" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_email_malformado_retorna_422[]" time="0.628" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_senha_vazia_retorna_422" time="0.806" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_com_senha_de_um_caractere_passa_validacao" time="0.974" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_sem_campos_obrigatorios_retorna_422[payload0]" time="0.666" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_sem_campos_obrigatorios_retorna_422[payload1]" time="0.710" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_sem_campos_obrigatorios_retorna_422[payload2]" time="0.816" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_via_formulario_oauth2_com_credenciais_corretas" time="0.905" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_via_formulario_oauth2_com_senha_errada_retorna_401" time="0.943" /><testcase classname="tests.v1-llm.test_v1_autenticacao" name="test_login_autor_retorna_perfil_autor" time="1.079" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_autor_lista_somente_os_proprios_ativos" time="1.088" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_outro_autor_nao_ve_ativos_da_autora" time="0.985" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_autor_sem_ativos_recebe_lista_vazia" time="0.899" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_autor_nao_pode_cadastrar_ativo" time="1.000" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_nit_pode_cadastrar_ativo" time="1.063" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_rotas_protegidas_sem_token_retornam_401[get-/api/assets/]" time="0.824" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_rotas_protegidas_sem_token_retornam_401[post-/api/assets/]" time="0.856" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_rotas_protegidas_sem_token_retornam_401[get-/api/auth/me]" time="0.693" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_malformado_retorna_401" time="0.744" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_assinado_com_outra_chave_retorna_401" time="0.640" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_expirado_retorna_401" time="0.650" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_prestes_a_expirar_ainda_e_aceito" time="0.643" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_com_sub_nao_numerico_retorna_401" time="0.655" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_sem_sub_retorna_401" time="0.811" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_token_de_usuario_inexistente_retorna_401" time="0.795" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_me_retorna_dados_do_usuario_logado[nit@teste.edu.br-NIT]" time="0.992" /><testcase classname="tests.v1-llm.test_v1_perfis_sessao" name="test_me_retorna_dados_do_usuario_logado[autora@teste.edu.br-AUTOR]" time="1.033" /></testsuite></testsuites>
