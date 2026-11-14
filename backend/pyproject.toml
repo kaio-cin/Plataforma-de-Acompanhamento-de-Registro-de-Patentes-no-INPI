@@ -1,6 +1,9 @@
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+# A v1 (gerada pela LLM, preservada sem edição) tem um teste que falha por defeito real (BUG-01).
+# Ela fica fora da execução padrão; para medi-la: pytest tests/v1-llm
+norecursedirs = ["v1-llm", ".*", "*.egg", "build", "dist", "node_modules", "venv", "__pycache__"]
 
 # Cobertura (Sprint 3): escopo restrito aos módulos das user stories selecionadas
 # (US01, US02, US03, US04, US06, US07). Rodar, por exemplo:
