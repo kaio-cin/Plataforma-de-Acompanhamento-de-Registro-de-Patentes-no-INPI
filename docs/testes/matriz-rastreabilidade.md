@@ -137,76 +137,76 @@ no formato Dado/Quando/Então a partir das user stories e das decisões registra
 
 | Requisito / critério | Variável | Partição ou limite | Caso de teste esperado | Coberto pela v1? | Coberto pela v2? |
 |---|---|---|---|---|---|
-| US01 — CA01-1 | e-mail, senha, canal | P01 P06 P09 | **CT-01-01**: login JSON do NIT com senha correta → 200, token bearer, user.role = NIT e token decodifica role NIT | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-2 | senha | P07 | **CT-01-02**: senha incorreta → 401 "E-mail ou senha incorretos." | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-3 | e-mail | P04 | **CT-01-03**: e-mail não cadastrado → 401 com a mesma mensagem | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-4 | e-mail | P03 | **CT-01-04**: "NIT@Teste.EDU.br" + senha correta → 200 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-5 | e-mail | P05 | **CT-01-05**: "nao-e-email" → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-5 | senha | P08 L01 | **CT-01-06**: senha "" (0 caracteres) → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-2 | senha | L01 | **CT-01-07**: senha "x" (1 caractere, errada) → 401 (passa da validação) | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-6 | canal | P10 | **CT-01-08**: formulário OAuth2 com credenciais corretas → 200, role NIT | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US01 — CA01-6 | canal, senha | P10 P07 | **CT-01-09**: formulário OAuth2 com senha errada → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US02 — CA02-1 | e-mail | P02 | **CT-02-01**: login da autora → 200, role AUTOR | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US02 — CA02-2 | carteira | P54 | **CT-02-02**: autora lista → somente "Patente da autora" | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US02 — CA02-3 | carteira | P55 | **CT-02-03**: autor sem vínculos lista → 200 [] | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-1 | perfil | P19 | **CT-03-01**: AUTOR faz POST /assets → 403 com a mensagem de permissão | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-2 | token | P12 | **CT-03-02**: GET /assets sem token → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-2 | token | P12 | **CT-03-03**: POST /assets sem token → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-2 | token | P12 | **CT-03-04**: GET /auth/me sem token → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-3 | token | P13 | **CT-03-05**: "Bearer token-falso" → 401 "Sessão inválida ou expirada…" | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-3 | token | P14 | **CT-03-06**: JWT assinado com outra chave → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-3 | token | P15 L02 | **CT-03-07**: JWT com exp = agora − 1 s → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-3 | token | L02 | **CT-03-08**: JWT com exp = agora + 60 s → 200 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-4 | token | P16 | **CT-03-09**: JWT válido com sub = "abc" → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-4 | token | P17 | **CT-03-10**: JWT válido com sub de usuário inexistente → 401 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US03 — CA03-5 | token | P11 | **CT-03-11**: GET /auth/me com token da autora → 200 com e-mail e role AUTOR | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-1 | todas (representantes válidos) | P18 P20 P25 P28 P34 P37 P41 P45 | **CT-04-01**: NIT cadastra ativo válido → 201 com os campos enviados | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-1 | — | P53 | **CT-04-02**: ativo cadastrado aparece na listagem do NIT | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-2 | natureza | P26 | **CT-04-03**: "Programa de Computador" → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-2 | natureza | P27 | **CT-04-04**: "Marca" → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | P21 L03 | **CT-04-05**: título com 2 caracteres → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | L03 | **CT-04-06**: título com 3 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | L04 | **CT-04-07**: título com 500 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | P22 L04 | **CT-04-08**: título com 501 caracteres → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | P23 | **CT-04-09**: título só com espaços → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | P24 | **CT-04-10**: "  Método   de  teste " → 201 com título "Método de teste" | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-3 | título | L13 | **CT-04-11**: "  ab  " → 422 e "  abc  " → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-4 | nº do processo | P29 L05 | **CT-04-12**: processo com 4 caracteres → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-4 | nº do processo | L05 | **CT-04-13**: processo com 5 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-4 | nº do processo | L06 | **CT-04-14**: processo com 50 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-4 | nº do processo | P30 L06 | **CT-04-15**: processo com 51 caracteres → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-4 | nº do processo | P31 | **CT-04-16**: "br 10  2025   000999-9" → gravado "BR 10 2025 000999-9" | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-4 | nº do processo | P33 | **CT-04-17**: processo só com espaços → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-5 | nº do processo | P32 | **CT-04-18**: processo idêntico a um existente → 409 com o número na mensagem | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-5 | nº do processo | P32 | **CT-04-19**: processo que difere só por caixa/espaços → 409 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-6 | data de depósito | L07 | **CT-04-20**: data = hoje → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-6 | data de depósito | P35 L07 | **CT-04-21**: data = amanhã → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-6 | data de depósito | P36 | **CT-04-22**: "2023-02-30" → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-7 | situação | P38 L08 | **CT-04-23**: situação com 1 caractere → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-7 | situação | L08 | **CT-04-24**: situação com 2 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-7 | situação | L09 | **CT-04-25**: situação com 100 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-7 | situação | P39 L09 | **CT-04-26**: situação com 101 caracteres → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-7 | situação | P40 | **CT-04-27**: situação só com espaços → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-8 | autores | P42 L10 | **CT-04-28**: autores com 1 caractere → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-8 | autores | L10 | **CT-04-29**: autores com 2 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-8 | autores | L11 | **CT-04-30**: autores com 1000 caracteres → 201 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-8 | autores | P43 L11 | **CT-04-31**: autores com 1001 caracteres → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-8 | autores | P44 | **CT-04-32**: autores só com espaços → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US04 — CA04-9 | payload | P56 | **CT-04-33**: cada campo obrigatório omitido, um por vez → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US06 — CA06-1 | carteira | P53 | **CT-06-01**: NIT lista → os 3 ativos, inclusive o sem autor | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US06 — CA06-2 | carteira | P53 | **CT-06-02**: ordem exata por data de depósito decrescente | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US06 — CA06-2 | ordenação | L12 | **CT-06-03**: duas datas iguais → o de maior id (cadastrado por último) primeiro | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US06 — CA06-3 | item da lista | P53 | **CT-06-04**: cada item traz todos os campos com os valores gravados (status atual incluso) | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US06 — CA06-4 | carteira | P52 | **CT-06-05**: carteira vazia → 200 [] | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-1 | e-mail do autor | P47 | **CT-07-01**: vincula a autora → 201, author_email e author_user_id preenchidos; autora passa a ver | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-1 | e-mail do autor | P47 | **CT-07-02**: outro autor não vê o ativo vinculado à autora | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-2 | e-mail do autor | P50 | **CT-07-03**: e-mail não cadastrado → 422 e o ativo não é gravado | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-3 | e-mail do autor | P49 | **CT-07-04**: e-mail de usuário NIT → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-4 | e-mail do autor | P46 | **CT-07-05**: author_email "" → 201 sem vínculo | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-4 | e-mail do autor | P46 | **CT-07-06**: author_email "   " → 201 sem vínculo | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-4 | e-mail do autor | P45 | **CT-07-07**: author_email ausente → 201 sem vínculo | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-5 | e-mail do autor | P48 | **CT-07-08**: "AUTORA@TESTE.EDU.BR" → vinculado à autora | (preencher na Etapa 3) | (preencher na Etapa 4) |
-| US07 — CA07-6 | e-mail do autor | P51 | **CT-07-09**: "nao-e-email" → 422 | (preencher na Etapa 3) | (preencher na Etapa 4) |
+| US01 — CA01-1 | e-mail, senha, canal | P01 P06 P09 | **CT-01-01**: login JSON do NIT com senha correta → 200, token bearer, user.role = NIT e token decodifica role NIT | sim (oráculo acoplado ao JWT interno) | sim (oráculo pelo comportamento) — lacuna G6 |
+| US01 — CA01-2 | senha | P07 | **CT-01-02**: senha incorreta → 401 "E-mail ou senha incorretos." | sim | sim |
+| US01 — CA01-3 | e-mail | P04 | **CT-01-03**: e-mail não cadastrado → 401 com a mesma mensagem | sim | sim |
+| US01 — CA01-4 | e-mail | P03 | **CT-01-04**: "NIT@Teste.EDU.br" + senha correta → 200 | sim | sim |
+| US01 — CA01-5 | e-mail | P05 | **CT-01-05**: "nao-e-email" → 422 | sim | sim |
+| US01 — CA01-5 | senha | P08 L01 | **CT-01-06**: senha "" (0 caracteres) → 422 | sim | sim |
+| US01 — CA01-2 | senha | L01 | **CT-01-07**: senha "x" (1 caractere, errada) → 401 (passa da validação) | sim | sim |
+| US01 — CA01-6 | canal | P10 | **CT-01-08**: formulário OAuth2 com credenciais corretas → 200, role NIT | sim | sim |
+| US01 — CA01-6 | canal, senha | P10 P07 | **CT-01-09**: formulário OAuth2 com senha errada → 401 | sim | sim |
+| US02 — CA02-1 | e-mail | P02 | **CT-02-01**: login da autora → 200, role AUTOR | sim | sim |
+| US02 — CA02-2 | carteira | P54 | **CT-02-02**: autora lista → somente "Patente da autora" | sim | sim |
+| US02 — CA02-3 | carteira | P55 | **CT-02-03**: autor sem vínculos lista → 200 [] | sim | sim |
+| US03 — CA03-1 | perfil | P19 | **CT-03-01**: AUTOR faz POST /assets → 403 com a mensagem de permissão | sim | sim |
+| US03 — CA03-2 | token | P12 | **CT-03-02**: GET /assets sem token → 401 | sim | sim |
+| US03 — CA03-2 | token | P12 | **CT-03-03**: POST /assets sem token → 401 | sim | sim |
+| US03 — CA03-2 | token | P12 | **CT-03-04**: GET /auth/me sem token → 401 | sim | sim |
+| US03 — CA03-3 | token | P13 | **CT-03-05**: "Bearer token-falso" → 401 "Sessão inválida ou expirada…" | sim | sim |
+| US03 — CA03-3 | token | P14 | **CT-03-06**: JWT assinado com outra chave → 401 | sim | sim |
+| US03 — CA03-3 | token | P15 L02 | **CT-03-07**: JWT com exp = agora − 1 s → 401 | sim | sim |
+| US03 — CA03-3 | token | L02 | **CT-03-08**: JWT com exp = agora + 60 s → 200 | sim | sim |
+| US03 — CA03-4 | token | P16 | **CT-03-09**: JWT válido com sub = "abc" → 401 | sim | sim |
+| US03 — CA03-4 | token | P17 | **CT-03-10**: JWT válido com sub de usuário inexistente → 401 | sim | sim |
+| US03 — CA03-5 | token | P11 | **CT-03-11**: GET /auth/me com token da autora → 200 com e-mail e role AUTOR | sim | sim |
+| US04 — CA04-1 | todas (representantes válidos) | P18 P20 P25 P28 P34 P37 P41 P45 | **CT-04-01**: NIT cadastra ativo válido → 201 com os campos enviados | sim | sim |
+| US04 — CA04-1 | — | P53 | **CT-04-02**: ativo cadastrado aparece na listagem do NIT | sim | sim |
+| US04 — CA04-2 | natureza | P26 | **CT-04-03**: "Programa de Computador" → 201 | sim | sim |
+| US04 — CA04-2 | natureza | P27 | **CT-04-04**: "Marca" → 422 | sim | sim |
+| US04 — CA04-3 | título | P21 L03 | **CT-04-05**: título com 2 caracteres → 422 | sim | sim |
+| US04 — CA04-3 | título | L03 | **CT-04-06**: título com 3 caracteres → 201 | sim | sim |
+| US04 — CA04-3 | título | L04 | **CT-04-07**: título com 500 caracteres → 201 | sim | sim |
+| US04 — CA04-3 | título | P22 L04 | **CT-04-08**: título com 501 caracteres → 422 | sim | sim |
+| US04 — CA04-3 | título | P23 | **CT-04-09**: título só com espaços → 422 | **não** | sim, xfail estrito (BUG-01) — lacuna G1 |
+| US04 — CA04-3 | título | P24 | **CT-04-10**: "  Método   de  teste " → 201 com título "Método de teste" | sim | sim |
+| US04 — CA04-3 | título | L13 | **CT-04-11**: "  ab  " → 422 e "  abc  " → 201 | parcial: só " ab " → 422, que **falhou** (BUG-01); lado válido não testado | sim: "  ab  " xfail estrito (BUG-01); "  abc  " → 201 passa — lacuna G2 |
+| US04 — CA04-4 | nº do processo | P29 L05 | **CT-04-12**: processo com 4 caracteres → 422 | sim | sim |
+| US04 — CA04-4 | nº do processo | L05 | **CT-04-13**: processo com 5 caracteres → 201 | sim | sim |
+| US04 — CA04-4 | nº do processo | L06 | **CT-04-14**: processo com 50 caracteres → 201 | sim | sim |
+| US04 — CA04-4 | nº do processo | P30 L06 | **CT-04-15**: processo com 51 caracteres → 422 | sim | sim |
+| US04 — CA04-4 | nº do processo | P31 | **CT-04-16**: "br 10  2025   000999-9" → gravado "BR 10 2025 000999-9" | sim | sim |
+| US04 — CA04-4 | nº do processo | P33 | **CT-04-17**: processo só com espaços → 422 | **não** | sim, xfail estrito (BUG-01) — lacuna G1 |
+| US04 — CA04-5 | nº do processo | P32 | **CT-04-18**: processo idêntico a um existente → 409 com o número na mensagem | sim | sim (+ caminho da corrida) — lacuna G5 |
+| US04 — CA04-5 | nº do processo | P32 | **CT-04-19**: processo que difere só por caixa/espaços → 409 | sim | sim |
+| US04 — CA04-6 | data de depósito | L07 | **CT-04-20**: data = hoje → 201 | sim | sim |
+| US04 — CA04-6 | data de depósito | P35 L07 | **CT-04-21**: data = amanhã → 422 | sim | sim |
+| US04 — CA04-6 | data de depósito | P36 | **CT-04-22**: "2023-02-30" → 422 | sim | sim |
+| US04 — CA04-7 | situação | P38 L08 | **CT-04-23**: situação com 1 caractere → 422 | sim | sim |
+| US04 — CA04-7 | situação | L08 | **CT-04-24**: situação com 2 caracteres → 201 | sim | sim |
+| US04 — CA04-7 | situação | L09 | **CT-04-25**: situação com 100 caracteres → 201 | sim | sim |
+| US04 — CA04-7 | situação | P39 L09 | **CT-04-26**: situação com 101 caracteres → 422 | sim | sim |
+| US04 — CA04-7 | situação | P40 | **CT-04-27**: situação só com espaços → 422 | **não** | sim, xfail estrito (BUG-01) — lacuna G1 |
+| US04 — CA04-8 | autores | P42 L10 | **CT-04-28**: autores com 1 caractere → 422 | sim | sim |
+| US04 — CA04-8 | autores | L10 | **CT-04-29**: autores com 2 caracteres → 201 | sim | sim |
+| US04 — CA04-8 | autores | L11 | **CT-04-30**: autores com 1000 caracteres → 201 | sim | sim |
+| US04 — CA04-8 | autores | P43 L11 | **CT-04-31**: autores com 1001 caracteres → 422 | sim | sim |
+| US04 — CA04-8 | autores | P44 | **CT-04-32**: autores só com espaços → 422 | **não** | sim, xfail estrito (BUG-01) — lacuna G1 |
+| US04 — CA04-9 | payload | P56 | **CT-04-33**: cada campo obrigatório omitido, um por vez → 422 | sim | sim |
+| US06 — CA06-1 | carteira | P53 | **CT-06-01**: NIT lista → os 3 ativos, inclusive o sem autor | sim | sim |
+| US06 — CA06-2 | carteira | P53 | **CT-06-02**: ordem exata por data de depósito decrescente | sim | sim (ordem exata) — lacuna G3 |
+| US06 — CA06-2 | ordenação | L12 | **CT-06-03**: duas datas iguais → o de maior id (cadastrado por último) primeiro | **não** | sim — lacuna G3 |
+| US06 — CA06-3 | item da lista | P53 | **CT-06-04**: cada item traz todos os campos com os valores gravados (status atual incluso) | parcial: asserção fraca (só confere as chaves) | sim (valores conferidos) — lacuna G4 |
+| US06 — CA06-4 | carteira | P52 | **CT-06-05**: carteira vazia → 200 [] | sim | sim |
+| US07 — CA07-1 | e-mail do autor | P47 | **CT-07-01**: vincula a autora → 201, author_email e author_user_id preenchidos; autora passa a ver | sim | sim |
+| US07 — CA07-1 | e-mail do autor | P47 | **CT-07-02**: outro autor não vê o ativo vinculado à autora | sim | sim |
+| US07 — CA07-2 | e-mail do autor | P50 | **CT-07-03**: e-mail não cadastrado → 422 e o ativo não é gravado | sim | sim |
+| US07 — CA07-3 | e-mail do autor | P49 | **CT-07-04**: e-mail de usuário NIT → 422 | sim | sim |
+| US07 — CA07-4 | e-mail do autor | P46 | **CT-07-05**: author_email "" → 201 sem vínculo | sim | sim |
+| US07 — CA07-4 | e-mail do autor | P46 | **CT-07-06**: author_email "   " → 201 sem vínculo | sim | sim |
+| US07 — CA07-4 | e-mail do autor | P45 | **CT-07-07**: author_email ausente → 201 sem vínculo | sim | sim |
+| US07 — CA07-5 | e-mail do autor | P48 | **CT-07-08**: "AUTORA@TESTE.EDU.BR" → vinculado à autora | sim | sim |
+| US07 — CA07-6 | e-mail do autor | P51 | **CT-07-09**: "nao-e-email" → 422 | sim | sim |
 
 ## 6. Totais do projeto manual
 
@@ -215,3 +215,28 @@ no formato Dado/Quando/Então a partir das user stories e das decisões registra
 - Partições de equivalência: 56 (25 válidas, 31 inválidas)
 - Valores-limite (fronteiras): 13
 - Casos de teste esperados: 70
+
+## 7. Lacunas da v1 e o que a v2 mudou (Etapa 4)
+
+| Lacuna | O que faltava na v1 | Casos da matriz | Teste(s) da v2 (`tests/v2/test_v2_lacunas.py`) | Resultado na v2 |
+|---|---|---|---|---|
+| G1 | Partição "somente espaços" (P23, P33, P40, P44) e o efeito na listagem | CT-04-09, CT-04-17, CT-04-27, CT-04-32 | `test_campo_so_com_espacos_retorna_422` (4 casos), `test_cadastro_invalido_nao_deixa_a_carteira_indisponivel` | 5 xfail estritos (BUG-01) |
+| G2 | Lado válido do limite L13 e limite superior efetivo do título | CT-04-11 (+ caso novo) | `test_titulo_com_2_caracteres_efetivos_retorna_422`, `test_titulo_com_3_caracteres_efetivos_e_aceito_e_normalizado`, `test_titulo_com_500_caracteres_efetivos_e_espacos_nas_bordas_e_aceito` | 1 passa, 2 xfail (BUG-01) |
+| G3 | Empate de datas (L12) e ordem exata | CT-06-02, CT-06-03 | `test_ordem_exata_da_carteira_por_data_de_deposito`, `test_empate_de_data_mostra_o_cadastrado_por_ultimo_primeiro` | passam |
+| G4 | Asserção fraca nos itens da lista | CT-06-04 | `test_itens_da_listagem_trazem_os_valores_gravados` | passa |
+| G5 | Linhas 49–52 de `asset_service.py` (corrida → `IntegrityError`) | CT-04-18 | `test_corrida_no_cadastro_do_mesmo_processo_retorna_409` | passa; linhas 100% |
+| G6 | Oráculo copiado da implementação (estrutura do JWT) | CT-01-01 | `test_token_do_login_identifica_usuario_e_perfil` (2 casos) | passam |
+
+Casos acrescentados na Etapa 4 que não estavam na matriz original (não entram nos denominadores dos indicadores):
+título com 500 caracteres efetivos e espaços nas bordas (lado oposto do BUG-01), carteira continua disponível após um
+cadastro inválido, e a corrida entre duas requisições com o mesmo processo.
+
+## 8. Indicadores calculados a partir desta matriz
+
+| Indicador | v1 (LLM) | v2 (melhorada) |
+|---|---|---|
+| Cobertura de requisitos (CAs com ≥ 1 teste ÷ 33) | 33/33 = 100% | 33/33 = 100% |
+| Partições cobertas (÷ 56) | 52/56 = 92,9% (faltam P23, P33, P40, P44) | 56/56 = 100% |
+| Valores-limite cobertos, os dois lados (÷ 13) | 11/13 = 84,6% (falta L12; L13 só um lado) | 13/13 = 100% |
+| Casos da matriz cobertos integralmente (÷ 70) | 63/70 = 90,0% (5 não, 2 parciais) | 70/70 = 100% |
+
