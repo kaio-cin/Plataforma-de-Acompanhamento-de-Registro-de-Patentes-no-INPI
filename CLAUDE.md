@@ -97,4 +97,10 @@ Model `Alert` (David): destinatário, despacho, ativo, tipo (informativo ou exig
 
 Função usada pela frente da RPI: `create_alerts_for(db, dispatch)`, no módulo de alertas (David). Cria um alerta para cada usuário NIT e para o autor vinculado ao ativo.
 
-Formato JSON de `/timeline`, `/alerts` e `/rpi/editions`: ainda a combinar. Registre aqui quando o grupo definir.
+Formato JSON de `/timeline` e `/rpi/editions`: ainda a combinar. Registre aqui quando o grupo definir.
+
+Alertas (US12, David). Cada usuário (NIT ou AUTOR) só vê e altera os próprios alertas; alerta de outro usuário ou inexistente responde 404.
+- `GET /api/alerts/`: lista, do mais novo para o mais antigo, sem paginação. Filtros combináveis: `?unread=true` (só não lidos) e `?requires_action=true` (só os que exigem ação).
+- `GET /api/alerts/unread-count`: `{"count": 3}`.
+- `PATCH /api/alerts/{id}/read`: marca como lido e devolve o alerta (repetir não é erro).
+- Campos de cada alerta: `id`, `asset_id`, `asset_title`, `process_number` (como cadastrado), `dispatch_code`, `dispatch_description`, `dispatch_plain_description` (explicação do glossário ou `null`), `publication_date`, `requires_action`, `deadline` (data ou `null`), `is_read`, `created_at`.

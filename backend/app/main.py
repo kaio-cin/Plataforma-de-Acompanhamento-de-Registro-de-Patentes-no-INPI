@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.database.init_db import init_db
-from app.routes import assets, auth, health
+from app.routes import alerts, assets, auth, health
 
 
 @asynccontextmanager
@@ -41,6 +41,7 @@ def create_app(cors_origins: list[str] | None = None) -> FastAPI:
     app.include_router(health.router, prefix=settings.api_prefix)
     app.include_router(auth.router, prefix=settings.api_prefix)
     app.include_router(assets.router, prefix=settings.api_prefix)
+    app.include_router(alerts.router, prefix=settings.api_prefix)
     return app
 
 
