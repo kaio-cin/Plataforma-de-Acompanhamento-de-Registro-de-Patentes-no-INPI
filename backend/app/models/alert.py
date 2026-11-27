@@ -43,5 +43,37 @@ class Alert(Base):
     user: Mapped[User] = relationship()
     dispatch: Mapped[Dispatch] = relationship()
 
+    # Dados do despacho e do ativo expostos diretamente na resposta da API (US12).
+    @property
+    def asset_id(self) -> int:
+        return self.dispatch.asset_id
+
+    @property
+    def asset_title(self) -> str:
+        return self.dispatch.asset.title
+
+    @property
+    def process_number(self) -> str:
+        """Número do processo como cadastrado (não o texto cru da RPI)."""
+        return self.dispatch.asset.process_number
+
+    @property
+    def dispatch_code(self) -> str:
+        return self.dispatch.code
+
+    @property
+    def dispatch_description(self) -> str:
+        return self.dispatch.description
+
+    @property
+    def dispatch_plain_description(self) -> str | None:
+        """Explicação em linguagem simples do glossário; vazia se o código não estiver nele."""
+        code = self.dispatch.dispatch_code
+        return code.plain_description if code is not None else None
+
+    @property
+    def publication_date(self) -> date:
+        return self.dispatch.publication_date
+
     def __repr__(self) -> str:
         return f"<Alert id={self.id} user={self.user_id} dispatch={self.dispatch_id} read={self.is_read}>"
