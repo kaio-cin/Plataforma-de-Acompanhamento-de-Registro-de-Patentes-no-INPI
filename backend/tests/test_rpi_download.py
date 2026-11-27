@@ -529,3 +529,97 @@ def test_falha_na_limpeza_nao_esconde_o_erro_original(
             download_edition(2916, tmp_path)
 
     assert "Não foi possível apagar o arquivo temporário" in caplog.text
+
+
+class _ArquivoQueFalhaAoFechar:
+    """Embrulha o arquivo real: grava normalmente, mas o fechamento levanta OSError (disco cheio)."""
+
+    def __init__(self, real) -> None:
+        self._real = real
+
+    def write(self, dados: bytes) -> int:
+        return self._real.write(dados)
+
+    def __enter__(self) -> "_ArquivoQueFalhaAoFechar":
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self._real.close()  # fecha de verdade, para o temporário poder ser apagado
+        raise OSError(28, "No space left on device")
+
+
+def _fechamento_que_falha(monkeypatch: pytest.MonkeyPatch, vezes: int | None) -> list[int]:
+    """Faz o fechamento do arquivo aberto por os.fdopen falhar nas primeiras `vezes` chamadas (None = sempre)."""
+    chamadas: list[int] = []
+    original = service.os.fdopen
+
+    def fdopen(fd: int, *args, **kwargs):
+        chamadas.append(fd)
+        real = original(fd, *args, **kwargs)
+        if vezes is None or len(chamadas) <= vezes:
+            return _ArquivoQueFalhaAoFechar(real)
+        return real
+
+    monkeypatch.setattr(service.os, "fdopen", fdopen)
+    return chamadas
+
+
+def test_falha_ao_fechar_o_zip_temporario_funciona_na_segunda_tentativa(
+    internet: FakeInternet, sleeps: list[float], monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _fechamento_que_falha(monkeypatch, vezes=1)
+    internet.queue(URL_PATENTES, _ok(ZIP_PATENTES), _ok(ZIP_PATENTES))
+    internet.queue(URL_PROGRAMAS, _ok(ZIP_PROGRAMAS))
+
+    caminhos = download_edition(2916, tmp_path)
+
+    assert internet.count(URL_PATENTES) == 2
+    assert sleeps == [2]
+    assert caminhos[AssetType.PATENTE].read_bytes() == XML_PATENTES
+    assert _arquivos(tmp_path) == ["patentes.xml", "programas.xml"]  # nenhum temporário sobrou
+
+
+def test_falha_ao_fechar_o_zip_temporario_sempre_gera_erro(
+    internet: FakeInternet, sleeps: list[float], monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _fechamento_que_falha(monkeypatch, vezes=None)
+    internet.queue(URL_PATENTES, *(_ok(ZIP_PATENTES) for _ in range(3)))
+    internet.queue(URL_PROGRAMAS, *(_ok(ZIP_PROGRAMAS) for _ in range(3)))
+
+    with pytest.raises(RpiDownloadError, match="baixar ou salvar o arquivo de patentes") as erro:
+        download_edition(2916, tmp_path)
+
+    assert type(erro.value) is RpiDownloadError
+    assert isinstance(erro.value.__cause__.__cause__, OSError)
+    assert internet.count(URL_PATENTES) == 3
+    assert internet.count(URL_PROGRAMAS) == 3
+    assert _arquivos(tmp_path) == []
+
+
+def test_falha_no_fdopen_fecha_o_descritor_e_tenta_de_novo(
+    internet: FakeInternet, sleeps: list[float], monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    original_fdopen, original_close = service.os.fdopen, service.os.close
+    falhas = iter([True])
+    fechados: list[int] = []
+
+    def fdopen(fd: int, *args, **kwargs):
+        if next(falhas, False):
+            raise OSError("sem memória para o buffer")
+        return original_fdopen(fd, *args, **kwargs)
+
+    def close(fd: int) -> None:
+        fechados.append(fd)
+        original_close(fd)
+
+    monkeypatch.setattr(service.os, "fdopen", fdopen)
+    monkeypatch.setattr(service.os, "close", close)
+    internet.queue(URL_PATENTES, _ok(ZIP_PATENTES))
+    internet.queue(URL_PROGRAMAS, _ok(ZIP_PROGRAMAS))
+
+    download_edition(2916, tmp_path)
+
+    assert len(fechados) == 1  # o descritor do mkstemp foi fechado
+    assert sleeps == [2]
+    # No Windows, um descritor esquecido aberto impediria apagar o temporário.
+    assert _arquivos(tmp_path) == ["patentes.xml", "programas.xml"]

@@ -175,11 +175,29 @@ def _download_once(url: str, rpi_file: RpiFile, number: int, destination: Path) 
         raise _LocalDiskError(f"não foi possível criar o temporário ({type(exc).__name__})") from exc
     zip_path = Path(tmp_name)
     try:
-        with os.fdopen(fd, "wb") as zip_file:
-            _fetch(url, rpi_file, number, zip_file)
+        try:
+            zip_file = os.fdopen(fd, "wb")
+        except OSError as exc:
+            _close_descriptor(fd)  # sem o objeto de arquivo, ninguém mais fecharia o descritor
+            raise _LocalDiskError(f"não foi possível abrir o temporário ({type(exc).__name__})") from exc
+        # _fetch já converte os erros de rede; um OSError aqui vem do disco local, inclusive ao
+        # fechar o arquivo na saída do "with" (por exemplo, disco cheio ao gravar o que ficou em buffer).
+        try:
+            with zip_file:
+                _fetch(url, rpi_file, number, zip_file)
+        except OSError as exc:
+            raise _LocalDiskError(f"falha ao gravar o ZIP temporário ({type(exc).__name__})") from exc
         _extract_xml(zip_path, rpi_file, number, destination)
     finally:
         _remove_temporary(zip_path)
+
+
+def _close_descriptor(fd: int) -> None:
+    """Fecha um descritor de arquivo. Se falhar, só registra no log, para não esconder o erro original."""
+    try:
+        os.close(fd)
+    except OSError as exc:
+        logger.warning("Não foi possível fechar o descritor do arquivo temporário (%s)", type(exc).__name__)
 
 
 def _remove_temporary(path: Path) -> None:
