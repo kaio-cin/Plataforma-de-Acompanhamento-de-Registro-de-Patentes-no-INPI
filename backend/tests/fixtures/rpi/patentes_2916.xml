@@ -1,0 +1,72 @@
+<revista numero="2916" dataPublicacao="24/11/2026" diretoria="Patente">
+  <despacho>
+    <codigo>130</codigo>
+    <titulo>Recurso Prejudicado</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="A2">BR 12 2021 017258-7</numero>
+      <divisao-pedido inid="62">
+        <data-deposito>21/04/2017</data-deposito>
+        <numero>BR 11 2018 070846-1</numero>
+      </divisao-pedido>
+    </processo-patente>
+    <comentario inid="co">Prejudicado o recurso publicado na RPI 2727 de 11/4/2023, por perda de objeto, já que o pedido foi definitivamente arquivado por falta de pagamento de retribuição anual, sendo a notificação de tal ato efetuada na RPI 2915, de 17/11/2026. [130]</comentario>
+  </despacho>
+  <despacho>
+    <codigo>1.3</codigo>
+    <titulo>Pedido PCT Admitido na Fase Nacional</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="A2">BR 11 2024 024012-6</numero>
+      <titulo inid="54">MÉTODOS PARA PRODUÇÃO DE PRODUTOS DE SAPONINAS EM CULTURA DE CÉLULAS VEGETAIS, EXTRATOS BRUTOS DE CÉLULAS VEGETAIS COMPREENDENDO SAPONINAS CONVERTIDAS ENZIMATICAMENTE EM UMA PLURALIDADE DOS DITOS PRODUTOS, E MÉTODO PARA PREPARAR UM ADJUVANTE</titulo>
+    </processo-patente>
+  </despacho>
+  <despacho>
+    <codigo>2.1</codigo>
+    <titulo>Pedido de Patente ou Certificado de Adição de Invenção Depositado</titulo>
+    <processo-patente>
+      <numero inid="21">BR 13 2025 026268-0</numero>
+      <pedido-principal inid="61">
+        <data-deposito>18/02/2016</data-deposito>
+        <numero>BR 11 2018 016581-6</numero>
+      </pedido-principal>
+    </processo-patente>
+  </despacho>
+  <despacho>
+    <codigo>6.1</codigo>
+    <titulo>Exigência Técnica - Art. 36 da LPI</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="A2">BR 11 2021 007863-0</numero>
+    </processo-patente>
+  </despacho>
+  <despacho>
+    <codigo>15.11</codigo>
+    <titulo>Alteração de Classificação</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="A2">BR 11 2021 007863-0</numero>
+    </processo-patente>
+    <comentario inid="co">A Classificação Anterior era: H04N 19/50</comentario>
+  </despacho>
+  <despacho>
+    <codigo>15.11</codigo>
+    <titulo>Alteração de Classificação</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="U2">MU 6800992-5</numero>
+    </processo-patente>
+    <comentario inid="co">A Classificação Anterior era: H02J 3/00</comentario>
+  </despacho>
+  <despacho>
+    <codigo>15.11</codigo>
+    <titulo>Alteração de Classificação</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="A2">PI 0002026-5</numero>
+    </processo-patente>
+    <comentario inid="co">A Classificação Anterior era: H02J 3/00</comentario>
+  </despacho>
+  <despacho>
+    <codigo>28.10.32</codigo>
+    <titulo>Notificação de requerimento de trâmite prioritário de PPH</titulo>
+    <processo-patente>
+      <numero inid="21" kindcode="A2">BR 10 2022 019543-9</numero>
+    </processo-patente>
+    <comentario inid="co">Notificação de requerimento de trâmite prioritário de PPH, conforme protocolo n° 870260104078, de 08/10/2026</comentario>
+  </despacho>
+</revista>
