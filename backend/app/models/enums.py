@@ -15,3 +15,12 @@ class AssetType(str, Enum):
 
     PATENTE = "Patente"
     PROGRAMA_DE_COMPUTADOR = "Programa de Computador"
+
+
+class RpiEditionStatus(str, Enum):
+    """Situação do processamento de uma edição da RPI (US08, US10)."""
+
+    BAIXADA = "Baixada"  # XML baixado, ainda não cruzado com os processos
+    PROCESSANDO = "Processando"  # Cruzamento em andamento
+    PROCESSADA = "Processada"  # Cruzamento concluído
+    ERRO = "Erro"  # Falha no download ou no processamento
