@@ -1,9 +1,10 @@
 """Regras dos alertas de despachos da RPI (US11–US13), independentes da camada HTTP."""
 
 import logging
+from collections.abc import Sequence
 from datetime import date, timedelta
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import Alert, Dispatch, User, UserRole
@@ -11,6 +12,10 @@ from app.services import email_service
 from app.services.alert_message import build_alert_email
 
 logger = logging.getLogger(__name__)
+
+
+class AlertNotFoundError(Exception):
+    """Alerta inexistente ou de outro usuário: os dois casos são tratados igual, para não revelar ids."""
 
 
 def calculate_deadline(publication_date: date, deadline_days: int | None) -> date | None:
@@ -126,3 +131,43 @@ def send_pending_alert_emails(db: Session) -> int:
         else:
             _release(db, alert_id)
     return sent
+
+
+def list_alerts_for(
+    db: Session, user: User, *, unread_only: bool = False, requires_action_only: bool = False
+) -> Sequence[Alert]:
+    """Alertas do próprio usuário, do mais novo para o mais antigo (US12).
+
+    Vale para os dois perfis: o NIT também só vê os alertas dele (ele recebe um de cada despacho).
+    """
+    query = (
+        select(Alert)
+        .where(Alert.user_id == user.id)
+        .options(
+            selectinload(Alert.dispatch).selectinload(Dispatch.asset),
+            selectinload(Alert.dispatch).selectinload(Dispatch.dispatch_code),
+        )
+        .order_by(Alert.created_at.desc(), Alert.id.desc())
+    )
+    if unread_only:
+        query = query.where(Alert.is_read.is_(False))
+    if requires_action_only:
+        query = query.where(Alert.requires_action.is_(True))
+    return db.scalars(query).all()
+
+
+def count_unread_for(db: Session, user: User) -> int:
+    """Quantidade de alertas não lidos do usuário, para o contador da barra superior (US12)."""
+    return db.scalar(
+        select(func.count()).select_from(Alert).where(Alert.user_id == user.id, Alert.is_read.is_(False))
+    )
+
+
+def mark_as_read(db: Session, user: User, alert_id: int) -> Alert:
+    """Marca um alerta do próprio usuário como lido. Marcar de novo não é erro."""
+    alert = db.scalar(select(Alert).where(Alert.id == alert_id, Alert.user_id == user.id))
+    if alert is None:
+        raise AlertNotFoundError("Alerta não encontrado.")
+    alert.is_read = True
+    db.commit()
+    return alert
