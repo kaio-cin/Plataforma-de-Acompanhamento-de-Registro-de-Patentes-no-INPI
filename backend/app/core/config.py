@@ -36,6 +36,15 @@ class Settings(BaseSettings):
             return [str(origin).strip().rstrip("/") for origin in value if str(origin).strip()]
         return value
 
+    # E-mail dos alertas (US11). Com SMTP_HOST vazio, o e-mail só é impresso no terminal
+    # (desenvolvimento). Preenchido, é enviado por SMTP (ex.: Gmail com senha de app ou Mailtrap).
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+    smtp_use_tls: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:
