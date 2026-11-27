@@ -16,3 +16,6 @@ venv/
 .DS_Store
 .coverage
 htmlcov/
+
+# Arquivos da RPI baixados pelo coletor
+backend/data/
