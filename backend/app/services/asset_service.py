@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import Asset, AssetType, Dispatch, User, UserRole
+from app.services import alert_service
 from app.services.auth_service import get_user_by_email
 from app.services.process_number import normalize_process_number
 
@@ -143,12 +144,17 @@ def update_asset(db: Session, asset_id: int, changes: AssetChanges) -> Asset:
       mudar só a formatação é sempre permitido.
     - Com despachos da RPI já ligados ao ativo, o número normalizado não pode mudar.
     - A natureza pode mudar mesmo com despachos: o glossário de um despacho vem da seção da RPI.
+    - Se o autor vinculado for trocado ou removido, os alertas dele sobre este ativo são apagados na
+      mesma transação: ele deixa de ver os dados do ativo. Só vale para autor com perfil AUTOR (um
+      NIT vinculado por dado antigo continua recebendo tudo como NIT). O novo autor não recebe os
+      alertas antigos; o histórico fica na linha do tempo.
 
     Levanta AssetNotFoundError, DuplicateProcessError, ProcessNumberLockedError ou AuthorNotFoundError.
     """
     asset = db.scalar(select(Asset).options(selectinload(Asset.author_user)).where(Asset.id == asset_id))
     if asset is None:
         raise AssetNotFoundError("Ativo não encontrado.")
+    old_author = asset.author_user
 
     new_key = normalize_process_number(changes.process_number)
     if new_key != normalize_process_number(asset.process_number):
@@ -162,6 +168,15 @@ def update_asset(db: Session, asset_id: int, changes: AssetChanges) -> Asset:
             )
 
     author_user = _resolve_author(db, changes.author_email)
+
+    # Todas as checagens passaram. A remoção fica na transação do commit abaixo: se ele falhar, o
+    # rollback devolve os alertas junto com o ativo.
+    if (
+        old_author is not None
+        and old_author.role == UserRole.AUTOR
+        and (author_user is None or author_user.id != old_author.id)
+    ):
+        alert_service.remove_alerts_for_user_on_asset(db, old_author.id, asset.id)
 
     asset.title = changes.title
     asset.asset_type = changes.asset_type
