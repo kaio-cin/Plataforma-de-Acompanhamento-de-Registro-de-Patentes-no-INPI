@@ -38,6 +38,7 @@ Back-end (pasta `backend`, com o ambiente `.venv` ativo):
 python -m pip install -r requirements-dev.txt
 copy .env.example .env          (macOS/Linux: cp)
 python -m app.seed              (python -m app.seed --reset recomeça do zero)
+python -m app.seed_codes        (só os códigos de despacho, sem usuários de teste; serve para produção)
 uvicorn app.main:app --reload   (API em http://localhost:8000/docs)
 pytest
 ```
@@ -104,3 +105,7 @@ Alertas (US12, David). Cada usuário (NIT ou AUTOR) só vê e altera os próprio
 - `GET /api/alerts/unread-count`: `{"count": 3}`.
 - `PATCH /api/alerts/{id}/read`: marca como lido e devolve o alerta (repetir não é erro).
 - Campos de cada alerta: `id`, `asset_id`, `asset_title`, `process_number` (como cadastrado), `dispatch_code`, `dispatch_description`, `dispatch_plain_description` (explicação do glossário ou `null`), `publication_date`, `requires_action`, `deadline` (data ou `null`), `is_read`, `created_at`.
+
+Glossário (Kaio). Qualquer usuário logado (NIT ou AUTOR) lê o glossário inteiro.
+- `GET /api/dispatch-codes/`: lista sem paginação, patentes antes de programas e em ordem natural de código (`1.1`, `1.1.1`, `1.2`, `2.1`, `10.1`, `100`). Filtro opcional: `?asset_type=Patente` ou `?asset_type=Programa de Computador`.
+- Campos de cada código: `id`, `code`, `asset_type`, `official_description`, `plain_description`, `requires_action`, `deadline_days` (dias corridos a partir da publicação, ou `null`).
