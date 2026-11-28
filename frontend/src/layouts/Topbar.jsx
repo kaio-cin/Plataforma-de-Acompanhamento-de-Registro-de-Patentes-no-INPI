@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 import { Icon } from '../components/ui/Icon'
+import { NotificationBell } from './NotificationBell'
 import { UserMenu } from './UserMenu'
 
 /** Barra superior: menu (mobile), busca na carteira e usuário. */
@@ -49,6 +50,7 @@ export function Topbar({ search, onSearchChange, onOpenMenu }) {
       </div>
 
       <span className="flex-1" />
+      <NotificationBell />
       <UserMenu />
     </header>
   )
