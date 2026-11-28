@@ -167,7 +167,10 @@ No código, a coleta automática vem desligada, e no desenvolvimento local ela c
 - Cerca de 30 segundos depois que a API sobe, ele faz uma verificação. Ela tenta processar as edições que ainda não estão "Processada", entre a edição da terça mais recente e até 3 edições anteriores, sem voltar antes da edição mais antiga já registrada. Com o banco vazio, só a edição mais recente.
 - No fim de cada execução, o sistema tenta enviar os e-mails dos alertas pendentes.
 
+**Banco novo, sem ativos:** cerca de 30 segundos depois da primeira subida, a verificação pode processar a edição da terça mais recente antes de qualquer ativo ser cadastrado. Nesse caso a edição fica como "Processada", sem despachos, e o agendamento não a repete. Depois de cadastrar os ativos, processe essa edição de novo pelo `/docs`, informando o número dela (veja "Processar a RPI manualmente"). O número aparece em **GET /api/rpi/editions**. O mesmo vale para qualquer ativo cadastrado depois que uma edição já foi processada.
+
 **E-mail na publicação:**
+- O `render.yaml` não define as variáveis `SMTP_*`. Decida como os e-mails serão enviados **antes** do primeiro processamento com ativos reais: os alertas criados enquanto `SMTP_HOST` estiver vazio não recebem e-mail depois.
 - Sem `SMTP_HOST`, o e-mail não é enviado: ele só aparece na aba *Logs* do Render, e **o alerta é marcado como enviado** mesmo assim. Configurar o SMTP depois não reenvia esses alertas. Eles continuam na tela de Alertas.
 - O Render anunciou que os serviços web gratuitos [bloqueiam a saída para as portas SMTP 25, 465 e 587](https://render.com/changelog/free-web-services-will-no-longer-allow-outbound-traffic-to-smtp-ports). Pelo anúncio, para usar essas portas é preciso um plano pago. Outra porta ou outro provedor de e-mail não foi testado neste projeto.
 
