@@ -85,14 +85,14 @@ def test_recusa_texto_maior_que_a_coluna(pg_session: Session) -> None:
 def test_apagar_edicao_apaga_despachos_e_apagar_codigo_desliga(pg_session: Session) -> None:
     seed(pg_session)
     asset = pg_session.scalars(select(Asset)).first()
-    code = _code("6.1")
+    code = _code("T.1")  # fictício: o seed já carrega os códigos oficiais, como o 6.1
     edition = RpiEdition(number=2916, publication_date=date(2026, 11, 24))
     pg_session.add(
         Dispatch(
             edition=edition,
             asset=asset,
             process_number=asset.process_number,
-            code="6.1",
+            code="T.1",
             dispatch_code=code,
             description="Despacho fictício",
             publication_date=edition.publication_date,
