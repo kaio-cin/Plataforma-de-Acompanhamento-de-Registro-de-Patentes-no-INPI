@@ -3,11 +3,11 @@ import { Icon } from './ui/Icon'
 import { Spinner } from './ui/Spinner'
 
 /** Estados de uma lista carregada da API: carregando, erro (com nova tentativa) e vazio. */
-export function ListState({ loading, error, onRetry, empty }) {
+export function ListState({ loading, error, onRetry, empty, loadingLabel = 'Carregando ativos…' }) {
   if (loading) {
     return (
       <div className="flex justify-center px-6 py-14">
-        <Spinner label="Carregando ativos…" />
+        <Spinner label={loadingLabel} />
       </div>
     )
   }
