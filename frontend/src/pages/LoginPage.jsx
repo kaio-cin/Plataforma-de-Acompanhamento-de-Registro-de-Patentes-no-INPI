@@ -53,8 +53,8 @@ export function LoginPage() {
         <div>
           <p className="mb-4 max-w-[460px] type-display text-nav-ink-active">Cada despacho do INPI, no dia em que sai.</p>
           <p className="max-w-[420px] type-body">
-            Acompanhe as patentes e os programas de computador da universidade em um só lugar. Em breve, a RPI será lida
-            automaticamente toda terça, com alertas de prazo no painel e por e-mail.
+            Acompanhe as patentes e os programas de computador da universidade em um só lugar. A RPI é lida
+            automaticamente toda semana, com alertas de prazo no painel e por e-mail.
           </p>
         </div>
         <p className="type-caption">Núcleo de Inovação Tecnológica · {INSTITUTION_NAME}</p>
