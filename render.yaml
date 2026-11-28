@@ -22,6 +22,12 @@ services:
       # Endereço do front-end na Vercel (ex.: https://radar-inpi.vercel.app). O Render pede o valor na criação.
       - key: CORS_ORIGINS
         sync: false
+      # Coleta automática da RPI (US08). Com o agendador ligado, a API precisa de um único processo:
+      # o uvicorn lê WEB_CONCURRENCY, e cada processo teria o próprio agendador.
+      - key: RPI_SCHEDULER_ENABLED
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "1"
 
 databases:
   - name: radar-inpi-db
