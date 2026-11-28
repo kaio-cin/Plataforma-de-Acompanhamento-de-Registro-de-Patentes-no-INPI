@@ -13,9 +13,21 @@ class Settings(BaseSettings):
     app_name: str = "Radar INPI — Acompanhamento de PI no INPI"
     api_prefix: str = "/api"
 
-    # SQLite no MVP. Para PostgreSQL, basta trocar a URL:
-    # postgresql+psycopg://usuario:senha@host:5432/pi_inpi
+    # SQLite no desenvolvimento. Para PostgreSQL, basta trocar a URL:
+    # postgresql://usuario:senha@host:5432/pi_inpi (o driver psycopg é escolhido automaticamente)
     database_url: str = "sqlite:///./pi_inpi.db"
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def _postgres_driver(cls, value: object) -> object:
+        # Serviços de hospedagem (ex.: Render) fornecem "postgres://" ou "postgresql://", sem driver;
+        # o SQLAlchemy precisa de "postgresql+psycopg://" para usar o psycopg 3.
+        if isinstance(value, str):
+            value = value.strip()
+            for prefix in ("postgres://", "postgresql://"):
+                if value.startswith(prefix):
+                    return "postgresql+psycopg://" + value.removeprefix(prefix)
+        return value
 
     # JWT — em produção, defina JWT_SECRET_KEY no .env com um valor longo e aleatório.
     jwt_secret_key: str = "dev-secret-troque-em-producao"
