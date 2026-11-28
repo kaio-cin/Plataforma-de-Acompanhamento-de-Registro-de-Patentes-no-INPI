@@ -49,16 +49,30 @@ def list_assets_for(db: Session, user: User) -> Sequence[Asset]:
     return db.scalars(query).all()
 
 
+def _duplicate_message(process_number: str) -> str:
+    """Mensagem de processo já cadastrado, igual no cadastro e na corrida do commit."""
+    return f"Já existe um ativo cadastrado com o processo {process_number}."
+
+
+def _resolve_author(db: Session, author_email: str | None) -> User | None:
+    """Busca o usuário AUTOR a vincular (US07). Sem e-mail, não há vínculo.
+
+    Levanta AuthorNotFoundError se o e-mail não existe ou é de um usuário que não é AUTOR.
+    """
+    if not author_email:
+        return None
+    author_user = get_user_by_email(db, author_email)
+    if author_user is None or author_user.role != UserRole.AUTOR:
+        raise AuthorNotFoundError(f"Nenhum usuário com perfil AUTOR encontrado com o e-mail {author_email}.")
+    return author_user
+
+
 def create_asset(db: Session, data: NewAsset) -> Asset:
     """Cadastra um novo ativo (US04), opcionalmente vinculando um autor (US07)."""
     if db.scalar(select(Asset.id).where(Asset.process_number == data.process_number)) is not None:
-        raise DuplicateProcessError(f"Já existe um ativo cadastrado com o processo {data.process_number}.")
+        raise DuplicateProcessError(_duplicate_message(data.process_number))
 
-    author_user = None
-    if data.author_email:
-        author_user = get_user_by_email(db, data.author_email)
-        if author_user is None or author_user.role != UserRole.AUTOR:
-            raise AuthorNotFoundError(f"Nenhum usuário com perfil AUTOR encontrado com o e-mail {data.author_email}.")
+    author_user = _resolve_author(db, data.author_email)
 
     asset = Asset(
         title=data.title,
@@ -75,6 +89,6 @@ def create_asset(db: Session, data: NewAsset) -> Asset:
     except IntegrityError as exc:
         # Cobre a corrida entre a checagem acima e o INSERT (duas requisições simultâneas).
         db.rollback()
-        raise DuplicateProcessError(f"Já existe um ativo cadastrado com o processo {data.process_number}.") from exc
+        raise DuplicateProcessError(_duplicate_message(data.process_number)) from exc
     db.refresh(asset)
     return asset
