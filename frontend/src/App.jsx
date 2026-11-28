@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { RequireAuth } from './components/RequireAuth'
 import { AuthProvider } from './context/AuthProvider'
 import { DashboardLayout } from './layouts/DashboardLayout'
+import { AlertsPage } from './pages/AlertsPage'
 import { GlossaryPage } from './pages/GlossaryPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
@@ -19,6 +20,7 @@ export default function App() {
             <Route element={<DashboardLayout />}>
               <Route index element={<HomePage />} />
               <Route path="glossario" element={<GlossaryPage />} />
+              <Route path="alertas" element={<AlertsPage />} />
 
               <Route element={<RequireAuth roles={['NIT']} />}>
                 <Route path="ativos/novo" element={<NewAssetPage />} />
