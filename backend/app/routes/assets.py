@@ -16,6 +16,20 @@ def list_assets(db: DbSession, user: CurrentUser) -> Sequence[Asset]:
     return asset_service.list_assets_for(db, user)
 
 
+@router.get(
+    "/{asset_id}",
+    response_model=AssetRead,
+    summary="Detalhe de um ativo visível ao usuário (US05)",
+    responses={404: {"description": "Ativo inexistente ou não vinculado ao autor"}},
+)
+def get_asset(asset_id: int, db: DbSession, user: CurrentUser) -> Asset:
+    """Perfil NIT vê qualquer ativo; perfil AUTOR, só os vinculados a ele."""
+    try:
+        return asset_service.get_asset_for(db, user, asset_id)
+    except asset_service.AssetNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+
 @router.post(
     "/",
     response_model=AssetRead,

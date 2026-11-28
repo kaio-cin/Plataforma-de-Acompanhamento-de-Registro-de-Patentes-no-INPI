@@ -41,12 +41,30 @@ class AuthorNotFoundError(AssetServiceError):
     pass
 
 
+class AssetNotFoundError(AssetServiceError):
+    """Ativo inexistente ou fora do alcance do usuário: os dois casos são tratados igual, para não revelar ids."""
+
+
 def list_assets_for(db: Session, user: User) -> Sequence[Asset]:
     """NIT vê a carteira inteira; AUTOR vê apenas os ativos vinculados a ele (US03, US06)."""
     query = select(Asset).options(selectinload(Asset.author_user)).order_by(Asset.deposit_date.desc(), Asset.id.desc())
     if user.role != UserRole.NIT:
         query = query.where(Asset.author_user_id == user.id)
     return db.scalars(query).all()
+
+
+def get_asset_for(db: Session, user: User, asset_id: int) -> Asset:
+    """Detalhe de um ativo (US05): NIT vê qualquer um; AUTOR só os vinculados a ele.
+
+    Levanta AssetNotFoundError se o ativo não existe ou não é visível ao usuário.
+    """
+    query = select(Asset).options(selectinload(Asset.author_user)).where(Asset.id == asset_id)
+    if user.role != UserRole.NIT:
+        query = query.where(Asset.author_user_id == user.id)
+    asset = db.scalar(query)
+    if asset is None:
+        raise AssetNotFoundError("Ativo não encontrado.")
+    return asset
 
 
 def _duplicate_message(process_number: str) -> str:
