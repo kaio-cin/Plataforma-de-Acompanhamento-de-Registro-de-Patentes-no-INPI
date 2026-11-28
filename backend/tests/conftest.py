@@ -14,6 +14,7 @@ from app.core.security import hash_password
 from app.database import Base, get_db
 from app.main import create_app
 from app.models import Asset, AssetType, User, UserRole
+from app.routes.deps import get_session_factory
 
 PASSWORD = "senha-teste-123"
 
@@ -34,6 +35,10 @@ def db_session() -> Iterator[Session]:
 def client(db_session: Session) -> Iterator[TestClient]:
     application = create_app()
     application.dependency_overrides[get_db] = lambda: db_session
+    # Tarefas depois da resposta (e-mails) abrem a própria sessão: no banco em memória, nunca no real.
+    application.dependency_overrides[get_session_factory] = lambda: sessionmaker(
+        bind=db_session.get_bind(), autoflush=False, expire_on_commit=False
+    )
     # Sem o "with", o lifespan (que criaria o banco real) não é executado.
     yield TestClient(application)
 
