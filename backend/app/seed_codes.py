@@ -174,11 +174,13 @@ def seed_dispatch_codes(db: Session, entries: Sequence[DispatchCodeEntry] | None
 
 
 def print_summary(result: SeedCodesResult) -> None:
-    """Mostra no terminal o que a carga fez."""
+    """Mostra no terminal o que a carga fez.
+
+    Os códigos novos só entram na contagem (são centenas na primeira carga); os atualizados e os que
+    estão fora da tabela são listados um a um, porque são poucos e merecem conferência.
+    """
     if result.total == 0:
         print(f"  {AVISO_TABELA_VAZIA}")
-    for key in result.inserted:
-        print(f"  + código {_format_key(key)}")
     for key in result.updated:
         print(f"  ~ código {_format_key(key)} atualizado")
     for key in result.not_in_table:

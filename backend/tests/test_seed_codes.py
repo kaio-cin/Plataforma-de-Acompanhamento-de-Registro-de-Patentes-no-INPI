@@ -350,7 +350,7 @@ def test_resumo_avisa_tabela_vazia(capsys: pytest.CaptureFixture[str]) -> None:
     assert seed_codes.AVISO_TABELA_VAZIA in capsys.readouterr().out
 
 
-def test_resumo_mostra_inseridos_atualizados_e_fora_da_tabela(capsys: pytest.CaptureFixture[str]) -> None:
+def test_resumo_conta_inseridos_e_lista_atualizados_e_fora_da_tabela(capsys: pytest.CaptureFixture[str]) -> None:
     seed_codes.print_summary(
         seed_codes.SeedCodesResult(
             total=2,
@@ -361,7 +361,7 @@ def test_resumo_mostra_inseridos_atualizados_e_fora_da_tabela(capsys: pytest.Cap
     )
 
     out = capsys.readouterr().out
-    assert "+ código Patente T.1" in out
+    assert "Patente T.1" not in out  # os novos só entram na contagem
     assert "~ código Programa de Computador T.1 atualizado" in out
     assert "! código Patente T.9 está no banco, mas não na tabela (mantido)" in out
     assert "1 novos, 1 atualizados, 0 sem mudança" in out
