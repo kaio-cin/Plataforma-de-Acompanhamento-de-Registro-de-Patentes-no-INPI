@@ -17,15 +17,20 @@ Os dois perfis acessam o glossário de despachos, que explica em linguagem simpl
 
 ## Funcionalidades
 
-| Etapa | Histórias | Situação em 27/11/2026 |
+| Funcionalidade | Histórias | Situação em 28/11/2026 |
 |---|---|---|
 | Login e perfis | US01, US02, US03 | Pronto |
 | Cadastro e carteira de ativos | US04, US06, US07 | Pronto |
 | Edição de ativo | US05 | Em desenvolvimento |
-| Coleta e leitura da RPI | US08, US09, US10 | Download e leitura do XML prontos; cruzamento e tela de edições em desenvolvimento |
-| Alertas e e-mail | US11, US12, US13 | API e envio de e-mail prontos; tela em desenvolvimento |
+| Coleta da RPI | US08 | Download e leitura do XML prontos; agendamento semanal e botão "Processar agora" em desenvolvimento |
+| Cruzamento com os ativos | US09 | Pronto no back-end: grava os despachos, liga ao glossário e cria os alertas. Falta a rota que dispara o processamento |
+| Edições da RPI processadas | US10 | Em desenvolvimento |
+| Alertas por e-mail | US11 | Envio pronto; falta disparar os e-mails depois de cada processamento da RPI |
+| Alertas no painel | US12 | Pronto: tela com filtros, prazo em destaque, "marcar como lido" e contador na barra superior |
+| Alerta para o autor vinculado | US13 | Pronto |
 | Linha do tempo do ativo | US14 | Em desenvolvimento |
-| Glossário de despachos | apoio à US11 | Em revisão (códigos oficiais do INPI e tela) |
+| Glossário de despachos | apoio à US11 | Pronto: 361 códigos oficiais do INPI e tela para os dois perfis |
+| Banco PostgreSQL para a publicação | — | Pronto; publicação do sistema em preparação |
 
 A divisão do trabalho e o cronograma estão em [`docs/divisao-tarefas.md`](docs/divisao-tarefas.md).
 
