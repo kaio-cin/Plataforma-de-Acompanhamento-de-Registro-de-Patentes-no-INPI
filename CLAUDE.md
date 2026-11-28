@@ -39,6 +39,7 @@ python -m pip install -r requirements-dev.txt
 copy .env.example .env          (macOS/Linux: cp)
 python -m app.seed              (python -m app.seed --reset recomeça do zero)
 python -m app.seed_codes        (só os códigos de despacho, sem usuários de teste; serve para produção)
+python -m app.create_user --email E-MAIL --perfil NIT   (cria um usuário real; a senha é pedida no terminal)
 uvicorn app.main:app --reload   (API em http://localhost:8000/docs)
 pytest
 ```

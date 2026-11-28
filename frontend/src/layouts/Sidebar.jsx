@@ -10,7 +10,7 @@ const NAV_BY_ROLE = {
     section: 'Acompanhamento',
     items: [
       { to: '/', label: 'Carteira de ativos', icon: 'carteira', end: true },
-      { label: 'Alertas', icon: 'sino', soon: true },
+      { to: '/alertas', label: 'Alertas', icon: 'sino' },
       { label: 'Calendário', icon: 'calendario', soon: true },
       { label: 'Tarefas', icon: 'tarefa', soon: true },
       { label: 'Relatórios', icon: 'relatorio', soon: true },
@@ -21,7 +21,7 @@ const NAV_BY_ROLE = {
     section: 'Inventor(a)',
     items: [
       { to: '/', label: 'Meus ativos', icon: 'invencao', end: true },
-      { label: 'Alertas', icon: 'sino', soon: true },
+      { to: '/alertas', label: 'Alertas', icon: 'sino' },
       { label: 'Calendário', icon: 'calendario', soon: true },
       { to: '/glossario', label: 'Glossário de despachos', icon: 'glossario' },
     ],

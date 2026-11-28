@@ -1,0 +1,32 @@
+# Blueprint do Render: API (back-end) e banco PostgreSQL. Passo a passo no README, seção "Publicação".
+# Campos conferidos em https://render.com/docs/blueprint-spec (28/11/2026).
+
+services:
+  - type: web
+    name: radar-inpi-api
+    runtime: python
+    rootDir: backend
+    region: virginia
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Carrega ou atualiza os códigos de despacho (idempotente, não cria usuários) e sobe a API.
+    startCommand: python -m app.seed_codes && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: radar-inpi-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      # Endereço do front-end na Vercel (ex.: https://radar-inpi.vercel.app). O Render pede o valor na criação.
+      - key: CORS_ORIGINS
+        sync: false
+
+databases:
+  - name: radar-inpi-db
+    region: virginia
+    plan: free
+    postgresMajorVersion: "17"
+    databaseName: radar_inpi
+    user: radar_inpi
