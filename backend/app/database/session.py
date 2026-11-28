@@ -12,7 +12,8 @@ _is_sqlite = settings.database_url.startswith("sqlite")
 # check_same_thread só existe no SQLite; o FastAPI atende requisições em threads diferentes.
 _connect_args = {"check_same_thread": False} if _is_sqlite else {}
 
-engine = create_engine(settings.database_url, connect_args=_connect_args)
+# pool_pre_ping: o PostgreSQL hospedado fecha conexões ociosas; a conexão é testada antes de ser usada.
+engine = create_engine(settings.database_url, connect_args=_connect_args, pool_pre_ping=not _is_sqlite)
 
 if _is_sqlite:
 
