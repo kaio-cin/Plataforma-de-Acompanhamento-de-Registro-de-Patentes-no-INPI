@@ -98,7 +98,8 @@ O back-end lê as configurações de variáveis de ambiente ou do arquivo `backe
 | `JWT_SECRET_KEY` | Chave que assina os logins. **Troque em produção** por um valor longo e aleatório. |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Duração do login (padrão: 480 minutos, 8 horas). |
 | `CORS_ORIGINS` | Endereços do front-end autorizados a chamar a API, separados por vírgula. |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_USE_TLS` | Envio dos alertas por e-mail. Com `SMTP_HOST` vazio, o e-mail só é mostrado no terminal. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_USE_TLS` | Envio dos alertas por e-mail. Com `SMTP_HOST` vazio, o e-mail só é mostrado no terminal, e o alerta conta como enviado. |
+| `RPI_SCHEDULER_ENABLED` | Liga a coleta automática da RPI: terças e quartas às 9h, 13h e 18h (horário de Brasília), mais uma verificação cerca de 30 segundos depois que a API sobe. Padrão: `false` (desligada). Deixe desligada no desenvolvimento. |
 
 No front-end, `VITE_API_URL` aponta para a API (padrão: `http://localhost:8000/api`).
 
