@@ -38,6 +38,7 @@ Back-end (pasta `backend`, com o ambiente `.venv` ativo):
 python -m pip install -r requirements-dev.txt
 copy .env.example .env          (macOS/Linux: cp)
 python -m app.seed              (python -m app.seed --reset recomeça do zero)
+python -m app.seed_codes        (só os códigos de despacho, sem usuários de teste; serve para produção)
 uvicorn app.main:app --reload   (API em http://localhost:8000/docs)
 pytest
 ```
