@@ -30,7 +30,7 @@ const REQUIRED_FIELDS = {
 const HOW_IT_WORKS = [
   'Validamos os dados e se o número do processo já está na carteira.',
   'O ativo entra na carteira do NIT e, se houver autor vinculado, aparece em “Meus ativos” dele.',
-  'Com a coleta automática da RPI (próxima etapa), cada despacho do processo vira alerta.',
+  'A RPI é lida automaticamente toda semana: cada despacho do processo vira alerta para o NIT e o autor vinculado.',
 ]
 
 /** Validação rápida no navegador; as regras definitivas ficam na API. */

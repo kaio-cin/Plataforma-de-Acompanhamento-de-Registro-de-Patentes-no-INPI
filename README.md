@@ -22,10 +22,10 @@ Os dois perfis acessam o glossário de despachos, que explica em linguagem simpl
 | Login e perfis | US01, US02, US03 | Pronto |
 | Cadastro e carteira de ativos | US04, US06, US07 | Pronto |
 | Edição de ativo | US05 | Em desenvolvimento |
-| Coleta da RPI | US08 | Download e leitura do XML prontos; agendamento semanal e botão "Processar agora" em desenvolvimento |
-| Cruzamento com os ativos | US09 | Pronto no back-end: grava os despachos, liga ao glossário e cria os alertas. Falta a rota que dispara o processamento |
-| Edições da RPI processadas | US10 | Em desenvolvimento |
-| Alertas por e-mail | US11 | Envio pronto; falta disparar os e-mails depois de cada processamento da RPI |
+| Coleta da RPI | US08 | Pronto no back-end: download e leitura do XML, rota "Processar agora" (`POST /api/rpi/process`) e agendamento semanal (desligado por padrão no código; ligado na configuração do Render, no `render.yaml`). Falta o botão "Processar agora" na tela |
+| Cruzamento com os ativos | US09 | Pronto: grava os despachos, liga ao glossário e cria os alertas. É disparado pela rota "Processar agora" e pelo agendamento |
+| Edições da RPI processadas | US10 | Pronto no back-end (`GET /api/rpi/editions`, só NIT). Falta a tela de edições da RPI |
+| Alertas por e-mail | US11 | Pronto: os e-mails saem depois de cada processamento manual que dá certo e no fim de cada execução do agendamento. O Render gratuito bloqueia as portas SMTP 25, 465 e 587 (ver "Publicação") |
 | Alertas no painel | US12 | Pronto: tela com filtros, prazo em destaque, "marcar como lido" e contador na barra superior |
 | Alerta para o autor vinculado | US13 | Pronto |
 | Linha do tempo do ativo | US14 | Em desenvolvimento |
@@ -98,9 +98,36 @@ O back-end lê as configurações de variáveis de ambiente ou do arquivo `backe
 | `JWT_SECRET_KEY` | Chave que assina os logins. **Troque em produção** por um valor longo e aleatório. |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Duração do login (padrão: 480 minutos, 8 horas). |
 | `CORS_ORIGINS` | Endereços do front-end autorizados a chamar a API, separados por vírgula. |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_USE_TLS` | Envio dos alertas por e-mail. Com `SMTP_HOST` vazio, o e-mail só é mostrado no terminal. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_USE_TLS` | Envio dos alertas por e-mail. Com `SMTP_HOST` vazio, o e-mail só é mostrado no terminal, e o alerta conta como enviado. |
+| `RPI_SCHEDULER_ENABLED` | Liga a coleta automática da RPI: terças e quartas às 9h, 13h e 18h (horário de Brasília), mais uma verificação cerca de 30 segundos depois que a API sobe. Padrão: `false` (desligada), inclusive no desenvolvimento local; deixe assim no seu computador. Na publicação, o `render.yaml` define `true` (veja "Coleta automática da RPI"). |
 
 No front-end, `VITE_API_URL` aponta para a API (padrão: `http://localhost:8000/api`).
+
+## Processar a RPI manualmente
+
+Enquanto a tela de edições da RPI não fica pronta, o processamento é disparado pela documentação interativa da API, com um usuário do **NIT**. No computador, o endereço é http://localhost:8000/docs. Na publicação, é `https://ENDEREÇO-DA-API/docs`, mas o processamento no Render ainda não foi testado.
+
+1. Abra o `/docs` e clique em **Authorize**, no alto da página.
+2. Em `username`, informe o **e-mail** do usuário NIT e, em `password`, a senha. Deixe os outros campos em branco e clique em **Authorize**. Por padrão, o login vale 8 horas.
+3. Abra **POST /api/rpi/process** e clique em **Try it out**.
+4. O corpo do pedido pode vir preenchido com um valor de exemplo. Apague todo o conteúdo e escreva:
+   - **sem número** (`{}`): processa a edição da terça-feira mais recente, pelo horário de Brasília;
+   - **com número** (`{"number": 2916}`): processa a edição informada. Serve para repetir uma edição ou recuperar uma semana perdida.
+5. Clique em **Execute**. O sistema baixa a RPI do site do INPI, cruza os despachos com os ativos cadastrados e cria os alertas. **Pode levar alguns minutos.**
+
+A resposta mostra a edição e um resumo: despachos lidos, despachos que cruzaram com os ativos, despachos novos e alertas criados. Processar de novo a mesma edição não repete despachos nem alertas. Os e-mails dos alertas saem logo depois, só quando o processamento dá certo.
+
+Para ver as edições já registradas, use **GET /api/rpi/editions** (da mais nova para a mais antiga).
+
+| Resposta | O que significa |
+|---|---|
+| 401 | Sem login ou login expirado. Clique em **Authorize** de novo. |
+| 403 | O usuário não é do NIT. |
+| 404 | A edição ainda não foi publicada pelo INPI. |
+| 409 | A edição já está sendo processada. Tente de novo em alguns minutos. |
+| 422 | Número de edição inválido (precisa ser um número inteiro de 1 a 99999). |
+| 502 | Não foi possível baixar a RPI ou o arquivo do INPI veio num formato que não pôde ser lido. |
+| 500 | Falha ao cruzar a edição com os ativos ou ao gravar o resultado. Tente processar de novo. |
 
 ## Publicação
 
@@ -111,6 +138,7 @@ O back-end e o banco ficam no **Render**, e o front-end fica na **Vercel**. A pu
 1. **Back-end e banco no Render.** Em *New → Blueprint*, escolha este repositório. O Render lê o `render.yaml` e cria a API (`radar-inpi-api`) e o banco PostgreSQL (`radar-inpi-db`).
    - Quando ele pedir `CORS_ORIGINS`, informe o endereço que o front-end terá na Vercel (por exemplo, `https://radar-inpi.vercel.app`). Se ainda não souber, preencha depois no passo 3.
    - A `JWT_SECRET_KEY` é gerada pelo próprio Render, e a `DATABASE_URL` vem do banco.
+   - O `render.yaml` também liga a coleta automática da RPI (`RPI_SCHEDULER_ENABLED=true`), com um único processo (`WEB_CONCURRENCY=1`). Antes de cadastrar os ativos, leia "Coleta automática da RPI".
    - A cada inicialização, a API carrega ou atualiza os códigos de despacho (`python -m app.seed_codes`).
    - Confira se a API responde em `https://ENDEREÇO-DA-API/api/health`.
 2. **Front-end na Vercel.** Em *Add New → Project*, importe este repositório.
@@ -130,6 +158,22 @@ O back-end e o banco ficam no **Render**, e o front-end fica na **Vercel**. A pu
 
    O comando mostra o banco em uso (sem a senha) antes de pedir a senha do novo usuário. Do mesmo jeito se criam os autores (`--perfil AUTOR`). A External Database URL contém a senha do banco: não a coloque em arquivos do repositório nem em mensagens.
 
+### Coleta automática da RPI
+
+No código, a coleta automática vem desligada, e no desenvolvimento local ela continua assim. Na publicação, o `render.yaml` a liga com um único processo: `RPI_SCHEDULER_ENABLED=true` e `WEB_CONCURRENCY=1`. Confira as duas variáveis em *radar-inpi-api → Environment*. Um serviço criado antes dessa configuração pode não ter as duas. Se faltar alguma ou o valor estiver diferente, corrija e publique de novo pelo painel, se o Render não fizer isso sozinho. O processamento no Render, manual ou automático, ainda não foi testado.
+
+- A API precisa de **um único processo**, pois cada processo teria o próprio agendamento. O uvicorn lê a variável `WEB_CONCURRENCY`, que o [Render pode definir sozinho](https://render.com/docs/environment-variables). Por isso o `render.yaml` a fixa em `1`.
+- O agendamento roda às terças e quartas, às 9h, 13h e 18h (horário de Brasília).
+- Cerca de 30 segundos depois que a API sobe, ele faz uma verificação. Ela tenta processar as edições que ainda não estão "Processada", entre a edição da terça mais recente e até 3 edições anteriores, sem voltar antes da edição mais antiga já registrada. Com o banco vazio, só a edição mais recente.
+- No fim de cada execução, o sistema tenta enviar os e-mails dos alertas pendentes.
+
+**Banco novo, sem ativos:** cerca de 30 segundos depois da primeira subida, a verificação pode processar a edição da terça mais recente antes de qualquer ativo ser cadastrado. Nesse caso a edição fica como "Processada", sem despachos, e o agendamento não a repete. Depois de cadastrar os ativos, processe essa edição de novo pelo `/docs`, informando o número dela (veja "Processar a RPI manualmente"). O número aparece em **GET /api/rpi/editions**. O mesmo vale para qualquer ativo cadastrado depois que uma edição já foi processada.
+
+**E-mail na publicação:**
+- O `render.yaml` não define as variáveis `SMTP_*`. Decida como os e-mails serão enviados **antes** do primeiro processamento com ativos reais: os alertas criados enquanto `SMTP_HOST` estiver vazio não recebem e-mail depois.
+- Sem `SMTP_HOST`, o e-mail não é enviado: ele só aparece na aba *Logs* do Render, e **o alerta é marcado como enviado** mesmo assim. Configurar o SMTP depois não reenvia esses alertas. Eles continuam na tela de Alertas.
+- O Render anunciou que os serviços web gratuitos [bloqueiam a saída para as portas SMTP 25, 465 e 587](https://render.com/changelog/free-web-services-will-no-longer-allow-outbound-traffic-to-smtp-ports). Pelo anúncio, para usar essas portas é preciso um plano pago. Outra porta ou outro provedor de e-mail não foi testado neste projeto.
+
 ### Atualizações
 
 Depois do merge na `main`, publique de novo no painel de cada serviço, se ele ainda não tiver feito isso sozinho. A opção de publicação automática fica nas configurações de cada um.
@@ -139,7 +183,7 @@ Depois do merge na `main`, publique de novo no painel de cada serviço, se ele a
 Consultados na documentação do Render em 28/11/2026:
 - **O banco PostgreSQL gratuito expira 30 dias depois de criado.** Depois disso há 14 dias de tolerância e ele é apagado. Para uso real por mais tempo, antes do vencimento é preciso passar o banco para um plano pago ou para outro serviço de PostgreSQL. Basta trocar a `DATABASE_URL`.
 - A API gratuita "dorme" depois de 15 minutos sem acesso. O primeiro acesso seguinte demora cerca de um minuto.
-- Enquanto a API dorme, nada roda nela. Uma coleta automática da RPI agendada dentro da API não acontece nesses períodos.
+- Enquanto a API dorme, nada roda nela: a coleta automática da RPI não acontece nesses períodos. Com a coleta ligada (como no `render.yaml`), quando a API acorda (no primeiro acesso) ou é publicada de novo, a verificação feita cerca de 30 segundos depois da subida tenta processar as edições que ficaram pendentes (veja "Coleta automática da RPI"). Também é possível processar pelo `/docs` (veja "Processar a RPI manualmente").
 
 ## Testes
 
@@ -202,3 +246,7 @@ Um pedido passa pelas camadas nesta ordem: `routes` → `schemas` → `services`
 | Guilherme | Edição de ativo, linha do tempo e tela de edições da RPI |
 | Kaio | Códigos de despacho, glossário, publicação e documentação |
 | Breno | Qualidade, testes ponta a ponta e revisão |
+
+## Licença
+
+Este projeto é distribuído sob a **Apache License 2.0**. O texto completo está no arquivo [`LICENSE`](LICENSE).
