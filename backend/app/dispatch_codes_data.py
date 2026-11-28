@@ -47,18 +47,19 @@ class FonteOficial:
     data_consulta: date | None = None
 
 
-# Fonte de cada seção, registrada separadamente. Os PDFs foram gerados pelo sistema do INPI no momento da
-# consulta (metadado CreationDate de 27/11/2026); eles não trazem número de versão.
+# Fonte de cada seção, registrada separadamente. 200 e 700 são os números das seções no site do INPI, não
+# faixas de códigos. Os PDFs são gerados pelo sistema do INPI no momento da consulta (metadado CreationDate
+# de 27/11/2026) e não trazem número de versão.
 FONTE: dict[AssetType, FonteOficial] = {
     AssetType.PATENTE: FonteOficial(
         titulo="Tabela de Códigos de Despachos - Patentes",
-        url=None,  # PENDENTE: endereço de onde o PDF foi baixado
+        url="https://revistas.inpi.gov.br/rpi/download/despachos/200",
         versao=None,  # o PDF não informa versão
         data_consulta=date(2026, 11, 27),
     ),
     AssetType.PROGRAMA_DE_COMPUTADOR: FonteOficial(
         titulo="Tabela de Códigos de Despachos - Programas de Computador",
-        url=None,  # PENDENTE: endereço de onde o PDF foi baixado
+        url="https://revistas.inpi.gov.br/rpi/download/despachos/700",
         versao=None,  # o PDF não informa versão
         data_consulta=date(2026, 11, 27),
     ),
@@ -1785,13 +1786,15 @@ _PROGRAMAS: tuple[DispatchCodeEntry, ...] = (
         "O pedido de registro do programa foi publicado. O texto da tabela oficial para este código está "
         "confuso; confira o complemento do despacho.",
     ),
-    # Prazo contado "da data da notificação", não "desta data".
+    # A tabela conta o prazo "da data da notificação"; confirmado em 28/11/2026 que a notificação é a própria
+    # publicação na RPI.
     _programa(
         "082",
         "Pedido em exigência devido a irregularidades",
         "O INPI encontrou irregularidades e parou o pedido de registro até que as exigências sejam atendidas ou "
-        "contestadas. O prazo é de 60 dias contados da data da notificação; confira no complemento.",
+        "contestadas. É preciso responder em até 60 dias da publicação.",
         requires_action=True,
+        deadline_days=60,
     ),
     _programa(
         "090",
