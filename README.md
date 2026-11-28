@@ -103,6 +103,32 @@ O back-end lê as configurações de variáveis de ambiente ou do arquivo `backe
 
 No front-end, `VITE_API_URL` aponta para a API (padrão: `http://localhost:8000/api`).
 
+## Processar a RPI manualmente
+
+Enquanto a tela de edições da RPI não fica pronta, o processamento é disparado pela documentação interativa da API, com um usuário do **NIT**. No computador, o endereço é http://localhost:8000/docs. Na publicação, é `https://ENDEREÇO-DA-API/docs`, mas o processamento no Render ainda não foi testado.
+
+1. Abra o `/docs` e clique em **Authorize**, no alto da página.
+2. Em `username`, informe o **e-mail** do usuário NIT e, em `password`, a senha. Deixe os outros campos em branco e clique em **Authorize**. Por padrão, o login vale 8 horas.
+3. Abra **POST /api/rpi/process** e clique em **Try it out**.
+4. O corpo do pedido pode vir preenchido com um valor de exemplo. Apague todo o conteúdo e escreva:
+   - **sem número** (`{}`): processa a edição da terça-feira mais recente, pelo horário de Brasília;
+   - **com número** (`{"number": 2916}`): processa a edição informada. Serve para repetir uma edição ou recuperar uma semana perdida.
+5. Clique em **Execute**. O sistema baixa a RPI do site do INPI, cruza os despachos com os ativos cadastrados e cria os alertas. **Pode levar alguns minutos.**
+
+A resposta mostra a edição e um resumo: despachos lidos, despachos que cruzaram com os ativos, despachos novos e alertas criados. Processar de novo a mesma edição não repete despachos nem alertas. Os e-mails dos alertas saem logo depois, só quando o processamento dá certo.
+
+Para ver as edições já registradas, use **GET /api/rpi/editions** (da mais nova para a mais antiga).
+
+| Resposta | O que significa |
+|---|---|
+| 401 | Sem login ou login expirado. Clique em **Authorize** de novo. |
+| 403 | O usuário não é do NIT. |
+| 404 | A edição ainda não foi publicada pelo INPI. |
+| 409 | A edição já está sendo processada. Tente de novo em alguns minutos. |
+| 422 | Número de edição inválido (precisa ser um número inteiro de 1 a 99999). |
+| 502 | Não foi possível baixar a RPI ou o arquivo do INPI veio num formato que não pôde ser lido. |
+| 500 | Falha ao cruzar a edição com os ativos ou ao gravar o resultado. Tente processar de novo. |
+
 ## Publicação
 
 O back-end e o banco ficam no **Render**, e o front-end fica na **Vercel**. A publicação é para uso real: não há dados de demonstração nem senhas de teste. Os arquivos de configuração já estão no repositório: [`render.yaml`](render.yaml) e [`frontend/vercel.json`](frontend/vercel.json).
