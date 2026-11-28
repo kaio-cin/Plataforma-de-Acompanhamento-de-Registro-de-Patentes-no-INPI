@@ -22,7 +22,7 @@ Os dois perfis acessam o glossário de despachos, que explica em linguagem simpl
 | Login e perfis | US01, US02, US03 | Pronto |
 | Cadastro e carteira de ativos | US04, US06, US07 | Pronto |
 | Edição de ativo | US05 | Em desenvolvimento |
-| Coleta da RPI | US08 | Pronto no back-end: download e leitura do XML, rota "Processar agora" (`POST /api/rpi/process`) e agendamento semanal (desligado por padrão). Falta o botão "Processar agora" na tela |
+| Coleta da RPI | US08 | Pronto no back-end: download e leitura do XML, rota "Processar agora" (`POST /api/rpi/process`) e agendamento semanal (desligado por padrão no código; ligado na configuração do Render, no `render.yaml`). Falta o botão "Processar agora" na tela |
 | Cruzamento com os ativos | US09 | Pronto: grava os despachos, liga ao glossário e cria os alertas. É disparado pela rota "Processar agora" e pelo agendamento |
 | Edições da RPI processadas | US10 | Pronto no back-end (`GET /api/rpi/editions`, só NIT). Falta a tela de edições da RPI |
 | Alertas por e-mail | US11 | Pronto: os e-mails saem depois de cada processamento manual que dá certo e no fim de cada execução do agendamento. O Render gratuito bloqueia as portas SMTP 25, 465 e 587 (ver "Publicação") |
@@ -99,7 +99,7 @@ O back-end lê as configurações de variáveis de ambiente ou do arquivo `backe
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Duração do login (padrão: 480 minutos, 8 horas). |
 | `CORS_ORIGINS` | Endereços do front-end autorizados a chamar a API, separados por vírgula. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_USE_TLS` | Envio dos alertas por e-mail. Com `SMTP_HOST` vazio, o e-mail só é mostrado no terminal, e o alerta conta como enviado. |
-| `RPI_SCHEDULER_ENABLED` | Liga a coleta automática da RPI: terças e quartas às 9h, 13h e 18h (horário de Brasília), mais uma verificação cerca de 30 segundos depois que a API sobe. Padrão: `false` (desligada). Deixe desligada no desenvolvimento. |
+| `RPI_SCHEDULER_ENABLED` | Liga a coleta automática da RPI: terças e quartas às 9h, 13h e 18h (horário de Brasília), mais uma verificação cerca de 30 segundos depois que a API sobe. Padrão: `false` (desligada), inclusive no desenvolvimento local; deixe assim no seu computador. Na publicação, o `render.yaml` define `true` (veja "Coleta automática da RPI"). |
 
 No front-end, `VITE_API_URL` aponta para a API (padrão: `http://localhost:8000/api`).
 
@@ -138,6 +138,7 @@ O back-end e o banco ficam no **Render**, e o front-end fica na **Vercel**. A pu
 1. **Back-end e banco no Render.** Em *New → Blueprint*, escolha este repositório. O Render lê o `render.yaml` e cria a API (`radar-inpi-api`) e o banco PostgreSQL (`radar-inpi-db`).
    - Quando ele pedir `CORS_ORIGINS`, informe o endereço que o front-end terá na Vercel (por exemplo, `https://radar-inpi.vercel.app`). Se ainda não souber, preencha depois no passo 3.
    - A `JWT_SECRET_KEY` é gerada pelo próprio Render, e a `DATABASE_URL` vem do banco.
+   - O `render.yaml` também liga a coleta automática da RPI (`RPI_SCHEDULER_ENABLED=true`), com um único processo (`WEB_CONCURRENCY=1`). Antes de cadastrar os ativos, leia "Coleta automática da RPI".
    - A cada inicialização, a API carrega ou atualiza os códigos de despacho (`python -m app.seed_codes`).
    - Confira se a API responde em `https://ENDEREÇO-DA-API/api/health`.
 2. **Front-end na Vercel.** Em *Add New → Project*, importe este repositório.
@@ -159,9 +160,9 @@ O back-end e o banco ficam no **Render**, e o front-end fica na **Vercel**. A pu
 
 ### Coleta automática da RPI
 
-A coleta automática vem desligada. Para ligar, no Render, abra *radar-inpi-api → Environment* e crie duas variáveis: `RPI_SCHEDULER_ENABLED` com o valor `true` e `WEB_CONCURRENCY` com o valor `1`. Salve as duas. Elas só valem depois de uma nova publicação: se o Render não publicar de novo sozinho, publique pelo painel. O `render.yaml` não precisa mudar.
+No código, a coleta automática vem desligada, e no desenvolvimento local ela continua assim. Na publicação, o `render.yaml` a liga com um único processo: `RPI_SCHEDULER_ENABLED=true` e `WEB_CONCURRENCY=1`. Confira as duas variáveis em *radar-inpi-api → Environment*. Um serviço criado antes dessa configuração pode não ter as duas. Se faltar alguma ou o valor estiver diferente, corrija e publique de novo pelo painel, se o Render não fizer isso sozinho. O processamento no Render, manual ou automático, ainda não foi testado.
 
-- Use **um único processo**, pois cada processo teria o próprio agendamento. O `render.yaml` não usa `--workers`, mas o uvicorn também lê a variável `WEB_CONCURRENCY`, que o [Render pode definir sozinho](https://render.com/docs/environment-variables).
+- A API precisa de **um único processo**, pois cada processo teria o próprio agendamento. O uvicorn lê a variável `WEB_CONCURRENCY`, que o [Render pode definir sozinho](https://render.com/docs/environment-variables). Por isso o `render.yaml` a fixa em `1`.
 - O agendamento roda às terças e quartas, às 9h, 13h e 18h (horário de Brasília).
 - Cerca de 30 segundos depois que a API sobe, ele faz uma verificação. Ela tenta processar as edições que ainda não estão "Processada", entre a edição da terça mais recente e até 3 edições anteriores, sem voltar antes da edição mais antiga já registrada. Com o banco vazio, só a edição mais recente.
 - No fim de cada execução, o sistema tenta enviar os e-mails dos alertas pendentes.
@@ -179,7 +180,7 @@ Depois do merge na `main`, publique de novo no painel de cada serviço, se ele a
 Consultados na documentação do Render em 28/11/2026:
 - **O banco PostgreSQL gratuito expira 30 dias depois de criado.** Depois disso há 14 dias de tolerância e ele é apagado. Para uso real por mais tempo, antes do vencimento é preciso passar o banco para um plano pago ou para outro serviço de PostgreSQL. Basta trocar a `DATABASE_URL`.
 - A API gratuita "dorme" depois de 15 minutos sem acesso. O primeiro acesso seguinte demora cerca de um minuto.
-- Enquanto a API dorme, nada roda nela: a coleta automática da RPI não acontece nesses períodos. Quando a API acorda (no primeiro acesso) ou é publicada de novo, a verificação feita cerca de 30 segundos depois da subida tenta processar as edições que ficaram pendentes (veja "Coleta automática da RPI"). Também é possível processar pelo `/docs` (veja "Processar a RPI manualmente").
+- Enquanto a API dorme, nada roda nela: a coleta automática da RPI não acontece nesses períodos. Com a coleta ligada (como no `render.yaml`), quando a API acorda (no primeiro acesso) ou é publicada de novo, a verificação feita cerca de 30 segundos depois da subida tenta processar as edições que ficaram pendentes (veja "Coleta automática da RPI"). Também é possível processar pelo `/docs` (veja "Processar a RPI manualmente").
 
 ## Testes
 
