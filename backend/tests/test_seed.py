@@ -3,7 +3,8 @@ from datetime import date
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Asset, AssetType, User
+from app.dispatch_codes_data import DISPATCH_CODES
+from app.models import Asset, AssetType, DispatchCode, User
 from app.seed import DEMO_ASSETS, DEMO_USERS, seed
 
 
@@ -46,3 +47,10 @@ def test_seed_vincula_autora_aos_ativos_dela(db_session: Session) -> None:
 
     autora = db_session.scalar(select(User).where(User.email == "fernanda.costa@instituicao.edu.br"))
     assert {asset.process_number for asset in autora.assets} == {"BR 10 2023 001234-5", "BR 51 2023 004512-7"}
+
+
+def test_seed_de_demonstracao_tambem_carrega_os_codigos(db_session: Session) -> None:
+    seed(db_session)
+    seed(db_session)
+
+    assert db_session.scalar(select(func.count(DispatchCode.id))) == len(DISPATCH_CODES)
