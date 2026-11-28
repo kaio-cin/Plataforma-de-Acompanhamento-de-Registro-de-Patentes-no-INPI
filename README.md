@@ -157,6 +157,19 @@ O back-end e o banco ficam no **Render**, e o front-end fica na **Vercel**. A pu
 
    O comando mostra o banco em uso (sem a senha) antes de pedir a senha do novo usuário. Do mesmo jeito se criam os autores (`--perfil AUTOR`). A External Database URL contém a senha do banco: não a coloque em arquivos do repositório nem em mensagens.
 
+### Coleta automática da RPI
+
+A coleta automática vem desligada. Para ligar, no Render, abra *radar-inpi-api → Environment* e crie duas variáveis: `RPI_SCHEDULER_ENABLED` com o valor `true` e `WEB_CONCURRENCY` com o valor `1`. Salve as duas. Elas só valem depois de uma nova publicação: se o Render não publicar de novo sozinho, publique pelo painel. O `render.yaml` não precisa mudar.
+
+- Use **um único processo**, pois cada processo teria o próprio agendamento. O `render.yaml` não usa `--workers`, mas o uvicorn também lê a variável `WEB_CONCURRENCY`, que o [Render pode definir sozinho](https://render.com/docs/environment-variables).
+- O agendamento roda às terças e quartas, às 9h, 13h e 18h (horário de Brasília).
+- Cerca de 30 segundos depois que a API sobe, ele faz uma verificação. Ela tenta processar as edições que ainda não estão "Processada", entre a edição da terça mais recente e até 3 edições anteriores, sem voltar antes da edição mais antiga já registrada. Com o banco vazio, só a edição mais recente.
+- No fim de cada execução, o sistema tenta enviar os e-mails dos alertas pendentes.
+
+**E-mail na publicação:**
+- Sem `SMTP_HOST`, o e-mail não é enviado: ele só aparece na aba *Logs* do Render, e **o alerta é marcado como enviado** mesmo assim. Configurar o SMTP depois não reenvia esses alertas. Eles continuam na tela de Alertas.
+- O Render anunciou que os serviços web gratuitos [bloqueiam a saída para as portas SMTP 25, 465 e 587](https://render.com/changelog/free-web-services-will-no-longer-allow-outbound-traffic-to-smtp-ports). Pelo anúncio, para usar essas portas é preciso um plano pago. Outra porta ou outro provedor de e-mail não foi testado neste projeto.
+
 ### Atualizações
 
 Depois do merge na `main`, publique de novo no painel de cada serviço, se ele ainda não tiver feito isso sozinho. A opção de publicação automática fica nas configurações de cada um.
@@ -166,7 +179,7 @@ Depois do merge na `main`, publique de novo no painel de cada serviço, se ele a
 Consultados na documentação do Render em 28/11/2026:
 - **O banco PostgreSQL gratuito expira 30 dias depois de criado.** Depois disso há 14 dias de tolerância e ele é apagado. Para uso real por mais tempo, antes do vencimento é preciso passar o banco para um plano pago ou para outro serviço de PostgreSQL. Basta trocar a `DATABASE_URL`.
 - A API gratuita "dorme" depois de 15 minutos sem acesso. O primeiro acesso seguinte demora cerca de um minuto.
-- Enquanto a API dorme, nada roda nela. Uma coleta automática da RPI agendada dentro da API não acontece nesses períodos.
+- Enquanto a API dorme, nada roda nela: a coleta automática da RPI não acontece nesses períodos. Quando a API acorda (no primeiro acesso) ou é publicada de novo, a verificação feita cerca de 30 segundos depois da subida tenta processar as edições que ficaram pendentes (veja "Coleta automática da RPI"). Também é possível processar pelo `/docs` (veja "Processar a RPI manualmente").
 
 ## Testes
 
