@@ -57,6 +57,10 @@ class Settings(BaseSettings):
     smtp_from: str = ""
     smtp_use_tls: bool = True
 
+    # Coleta automática da RPI (US08): terças e quartas às 9h, 13h e 18h (horário de Brasília).
+    # Desligada por padrão (testes e desenvolvimento); em produção: RPI_SCHEDULER_ENABLED=true.
+    rpi_scheduler_enabled: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:

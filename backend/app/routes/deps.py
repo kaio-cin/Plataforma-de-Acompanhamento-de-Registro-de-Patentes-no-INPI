@@ -9,13 +9,25 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import decode_access_token
-from app.database import get_db
+from app.database import SessionLocal, get_db
 from app.models import User, UserRole
 
 # tokenUrl aponta para a rota de formulário, usada pelo botão "Authorize" do Swagger.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.api_prefix}/auth/token")
 
 DbSession = Annotated[Session, Depends(get_db)]
+
+
+def get_session_factory() -> Callable[[], Session]:
+    """Fábrica de sessões para tarefas que rodam depois da resposta (ex.: e-mails dos alertas).
+
+    A sessão da requisição já está fechada quando essas tarefas rodam. Os testes trocam esta
+    dependência pelo banco em memória.
+    """
+    return SessionLocal
+
+
+SessionFactory = Annotated[Callable[[], Session], Depends(get_session_factory)]
 
 
 def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_scheme)]) -> User:
