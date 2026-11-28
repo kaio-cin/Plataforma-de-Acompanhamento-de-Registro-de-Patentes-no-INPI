@@ -47,18 +47,19 @@ class FonteOficial:
     data_consulta: date | None = None
 
 
-# Fonte de cada seção, registrada separadamente. Os PDFs foram gerados pelo sistema do INPI no momento da
-# consulta (metadado CreationDate de 27/11/2026); eles não trazem número de versão.
+# Fonte de cada seção, registrada separadamente. 200 e 700 são os números das seções no site do INPI, não
+# faixas de códigos. Os PDFs são gerados pelo sistema do INPI no momento da consulta (metadado CreationDate
+# de 27/11/2026) e não trazem número de versão.
 FONTE: dict[AssetType, FonteOficial] = {
     AssetType.PATENTE: FonteOficial(
         titulo="Tabela de Códigos de Despachos - Patentes",
-        url=None,  # PENDENTE: endereço de onde o PDF foi baixado
+        url="https://revistas.inpi.gov.br/rpi/download/despachos/200",
         versao=None,  # o PDF não informa versão
         data_consulta=date(2026, 11, 27),
     ),
     AssetType.PROGRAMA_DE_COMPUTADOR: FonteOficial(
         titulo="Tabela de Códigos de Despachos - Programas de Computador",
-        url=None,  # PENDENTE: endereço de onde o PDF foi baixado
+        url="https://revistas.inpi.gov.br/rpi/download/despachos/700",
         versao=None,  # o PDF não informa versão
         data_consulta=date(2026, 11, 27),
     ),

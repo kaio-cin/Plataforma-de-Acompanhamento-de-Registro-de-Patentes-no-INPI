@@ -56,10 +56,11 @@ def test_descricao_oficial_e_o_titulo_publicado_na_rpi() -> None:
 
 
 @pytest.mark.parametrize("asset_type", list(AssetType))
-def test_fonte_de_cada_tipo_tem_titulo_e_data_de_consulta(asset_type: AssetType) -> None:
+def test_fonte_de_cada_tipo_tem_titulo_url_e_data_de_consulta(asset_type: AssetType) -> None:
     fonte = FONTE[asset_type]
 
     assert fonte.titulo
+    assert fonte.url and fonte.url.startswith("https://revistas.inpi.gov.br/")
     assert isinstance(fonte.data_consulta, date)
 
 

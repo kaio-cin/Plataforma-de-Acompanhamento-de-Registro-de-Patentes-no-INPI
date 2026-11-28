@@ -8,7 +8,7 @@ Tabela `dispatch_codes`: o que cada código de despacho da RPI significa, se exi
 |---|---|---|
 | Documento | Tabela de Códigos de Despachos - Patentes | Tabela de Códigos de Despachos - Programas de Computador |
 | Arquivo recebido | `tabela-despachos.pdf` (46 páginas) | `tabela-despachos-1.pdf` (5 páginas) |
-| Endereço (URL) | **pendente** | **pendente** |
+| Endereço (URL) | https://revistas.inpi.gov.br/rpi/download/despachos/200 | https://revistas.inpi.gov.br/rpi/download/despachos/700 |
 | Versão | o PDF não informa | o PDF não informa |
 | Data de consulta | 27/11/2026 | 27/11/2026 |
 | Códigos | 314 | 47 |
