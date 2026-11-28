@@ -8,8 +8,9 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
-from app.models import Asset, AssetType, User, UserRole
+from app.models import Asset, AssetType, Dispatch, User, UserRole
 from app.services.auth_service import get_user_by_email
+from app.services.process_number import normalize_process_number
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,23 @@ class NewAsset:
     author_email: str | None = None
 
 
+@dataclass(frozen=True)
+class AssetChanges:
+    """Dados da edição de um ativo (US05): substituem todos os campos.
+
+    author_email não tem valor padrão: quem chama precisa dizer se mantém, troca ou remove o
+    autor (None remove o vínculo).
+    """
+
+    title: str
+    asset_type: AssetType
+    process_number: str
+    deposit_date: date
+    status: str
+    authors: str
+    author_email: str | None
+
+
 class AssetServiceError(Exception):
     """Erro de regra de negócio, com mensagem pronta para o usuário."""
 
@@ -43,6 +61,10 @@ class AuthorNotFoundError(AssetServiceError):
 
 class AssetNotFoundError(AssetServiceError):
     """Ativo inexistente ou fora do alcance do usuário: os dois casos são tratados igual, para não revelar ids."""
+
+
+class ProcessNumberLockedError(AssetServiceError):
+    """O ativo já tem despachos da RPI ligados ao número atual, então o número não pode ser trocado."""
 
 
 def list_assets_for(db: Session, user: User) -> Sequence[Asset]:
@@ -108,5 +130,52 @@ def create_asset(db: Session, data: NewAsset) -> Asset:
         # Cobre a corrida entre a checagem acima e o INSERT (duas requisições simultâneas).
         db.rollback()
         raise DuplicateProcessError(_duplicate_message(data.process_number)) from exc
+    db.refresh(asset)
+    return asset
+
+
+def update_asset(db: Session, asset_id: int, changes: AssetChanges) -> Asset:
+    """Edita um ativo (US05), inclusive trocando ou removendo o autor vinculado.
+
+    Todas as checagens vêm antes de alterar o objeto: em qualquer erro, o ativo fica como estava.
+    - O número é comparado já normalizado, como no cruzamento da RPI ("BR10.2023.000001-1" é o
+      mesmo processo que "BR 10 2023 000001-1"). Só há checagem quando o número normalizado muda:
+      mudar só a formatação é sempre permitido.
+    - Com despachos da RPI já ligados ao ativo, o número normalizado não pode mudar.
+    - A natureza pode mudar mesmo com despachos: o glossário de um despacho vem da seção da RPI.
+
+    Levanta AssetNotFoundError, DuplicateProcessError, ProcessNumberLockedError ou AuthorNotFoundError.
+    """
+    asset = db.scalar(select(Asset).options(selectinload(Asset.author_user)).where(Asset.id == asset_id))
+    if asset is None:
+        raise AssetNotFoundError("Ativo não encontrado.")
+
+    new_key = normalize_process_number(changes.process_number)
+    if new_key != normalize_process_number(asset.process_number):
+        others = db.scalars(select(Asset.process_number).where(Asset.id != asset_id))
+        if any(normalize_process_number(number) == new_key for number in others):
+            raise DuplicateProcessError(_duplicate_message(changes.process_number))
+        if db.scalar(select(Dispatch.id).where(Dispatch.asset_id == asset_id).limit(1)) is not None:
+            raise ProcessNumberLockedError(
+                f"Este ativo já tem despachos da RPI ligados ao processo {asset.process_number}; "
+                "o número não pode ser trocado."
+            )
+
+    author_user = _resolve_author(db, changes.author_email)
+
+    asset.title = changes.title
+    asset.asset_type = changes.asset_type
+    asset.process_number = changes.process_number
+    asset.deposit_date = changes.deposit_date
+    asset.status = changes.status
+    asset.authors = changes.authors
+    asset.author_user = author_user
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        # Cobre a corrida com outro cadastro ou edição e o número igual, só com outra formatação,
+        # a um ativo antigo "gêmeo" (a checagem acima não roda quando o número normalizado não muda).
+        db.rollback()
+        raise DuplicateProcessError(_duplicate_message(changes.process_number)) from exc
     db.refresh(asset)
     return asset

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.models import Asset
 from app.routes.deps import CurrentUser, DbSession, NitUser
-from app.schemas.asset import AssetCreate, AssetRead
+from app.schemas.asset import AssetCreate, AssetRead, AssetUpdate
 from app.services import asset_service
 
 router = APIRouter(prefix="/assets", tags=["Ativos"])
@@ -45,6 +45,29 @@ def create_asset(data: AssetCreate, db: DbSession, _user: NitUser) -> Asset:
     try:
         return asset_service.create_asset(db, asset_service.NewAsset(**data.model_dump()))
     except asset_service.DuplicateProcessError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except asset_service.AuthorNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
+
+
+@router.put(
+    "/{asset_id}",
+    response_model=AssetRead,
+    summary="Edita um ativo (US05) — apenas perfil NIT",
+    responses={
+        403: {"description": "Usuário sem perfil NIT"},
+        404: {"description": "Ativo inexistente"},
+        409: {"description": "Número de processo já cadastrado ou bloqueado por despachos da RPI"},
+        422: {"description": "Dados inválidos ou autor não encontrado"},
+    },
+)
+def update_asset(asset_id: int, data: AssetUpdate, db: DbSession, _user: NitUser) -> Asset:
+    """Substitui todos os campos. `author_email` é obrigatório: null ou "" removem o autor vinculado."""
+    try:
+        return asset_service.update_asset(db, asset_id, asset_service.AssetChanges(**data.model_dump()))
+    except asset_service.AssetNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except (asset_service.DuplicateProcessError, asset_service.ProcessNumberLockedError) as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     except asset_service.AuthorNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)) from exc
