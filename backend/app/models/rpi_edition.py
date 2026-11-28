@@ -25,11 +25,14 @@ class RpiEdition(Base):
     __tablename__ = "rpi_editions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    # Número da revista (ex.: 2862). Único: cada edição é baixada e processada uma vez só.
+    # Número da revista (ex.: 2862). Único: uma linha por edição; reprocessar reaproveita a mesma linha.
     number: Mapped[int] = mapped_column(Integer, unique=True, index=True)
     publication_date: Mapped[date] = mapped_column(Date)
-    # Caminho local do XML baixado (pasta backend/data/rpi/, fora do Git).
+    # Pasta da edição, relativa à pasta de dados backend/data/rpi/ (ex.: "2916"), com patentes.xml e
+    # programas.xml. A pasta fica fora do Git.
     file_path: Mapped[str | None] = mapped_column(String(RPI_FILE_PATH_MAX_LENGTH), default=None)
+    # Baixada (padrão; não usado pelo processamento, que grava a edição já como Processando),
+    # Processando, Processada ou Erro.
     status: Mapped[RpiEditionStatus] = mapped_column(
         enum_column_type(RpiEditionStatus, name="rpi_edition_status", length=RPI_STATUS_MAX_LENGTH),
         default=RpiEditionStatus.BAIXADA,
@@ -38,6 +41,8 @@ class RpiEdition(Base):
     dispatch_count: Mapped[int] = mapped_column(Integer, default=0)
     # Motivo da falha, preenchido quando o status é "Erro".
     error_message: Mapped[str | None] = mapped_column(String(RPI_ERROR_MESSAGE_MAX_LENGTH), default=None)
+    # Última mudança de status (UTC, sem fuso). Em "Processando", marca o início: passado o
+    # tempo-limite, a edição pode ser retomada por outra chamada.
     processed_at: Mapped[datetime | None] = mapped_column(DateTime, default=None)
 
     # passive_deletes: o banco apaga os despachos (ON DELETE CASCADE) sem o ORM carregá-los antes.

@@ -22,3 +22,11 @@ class RpiInvalidFileError(RpiDownloadError):
 
 class RpiParseError(RpiError):
     """O XML da RPI não pôde ser lido."""
+
+
+class RpiAlreadyProcessingError(RpiError):
+    """Outra chamada já está processando a mesma edição."""
+
+
+class RpiProcessingError(RpiError):
+    """Falha ao cruzar a edição com os processos cadastrados ou ao gravar o resultado."""
