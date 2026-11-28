@@ -14,7 +14,7 @@ const NAV_BY_ROLE = {
       { label: 'Calendário', icon: 'calendario', soon: true },
       { label: 'Tarefas', icon: 'tarefa', soon: true },
       { label: 'Relatórios', icon: 'relatorio', soon: true },
-      { label: 'Glossário de despachos', icon: 'glossario', soon: true },
+      { to: '/glossario', label: 'Glossário de despachos', icon: 'glossario' },
     ],
   },
   AUTOR: {
@@ -23,7 +23,7 @@ const NAV_BY_ROLE = {
       { to: '/', label: 'Meus ativos', icon: 'invencao', end: true },
       { label: 'Alertas', icon: 'sino', soon: true },
       { label: 'Calendário', icon: 'calendario', soon: true },
-      { label: 'Glossário de despachos', icon: 'glossario', soon: true },
+      { to: '/glossario', label: 'Glossário de despachos', icon: 'glossario' },
     ],
   },
 }

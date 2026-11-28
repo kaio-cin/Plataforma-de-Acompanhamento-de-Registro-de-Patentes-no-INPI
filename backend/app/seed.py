@@ -1,10 +1,12 @@
-"""Popula o banco com usuários e ativos de demonstração.
+"""Popula o banco com usuários e ativos de demonstração e com os códigos de despacho (glossário).
 
 Execute a partir da pasta backend:  python -m app.seed
 Para recomeçar do zero (apaga tudo):  python -m app.seed --reset
 
 Sem --reset é idempotente: registros que já existem (mesmo e-mail ou processo) são mantidos.
+Os códigos de despacho seguem app/seed_codes.py: os que já existem são atualizados pela tabela.
 As senhas abaixo são apenas para desenvolvimento — nunca use este script em produção.
+Em produção, carregue só os códigos:  python -m app.seed_codes
 """
 
 import argparse
@@ -17,6 +19,7 @@ from app.core.security import hash_password
 from app.database import Base, SessionLocal, engine
 from app.database.init_db import init_db
 from app.models import Asset, AssetType, User, UserRole
+from app.seed_codes import print_summary, seed_dispatch_codes
 
 DEMO_USERS = [
     {"email": "nit@instituicao.edu.br", "password": "nit12345", "role": UserRole.NIT},
@@ -91,6 +94,8 @@ def seed(db: Session) -> None:
         db.add(Asset(**fields, author_user=users_by_email.get(data["author_email"] or "")))
         print(f"  + ativo {data['process_number']}")
 
+    # Não faz commit: entra na mesma transação dos usuários e ativos.
+    print_summary(seed_dispatch_codes(db))
     db.commit()
 
 
