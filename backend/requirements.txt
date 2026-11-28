@@ -14,3 +14,7 @@ passlib[bcrypt]==1.7.4
 bcrypt==4.0.1  # fixado: bcrypt>=4.1 quebra a detecção de versão do passlib
 python-jose[cryptography]==3.5.0
 python-multipart==0.0.32
+
+# Agendamento semanal da RPI (US08)
+APScheduler==3.11.3
+tzdata==2026.6  # base de fusos horários (o Windows não tem); usada pelo agendamento
