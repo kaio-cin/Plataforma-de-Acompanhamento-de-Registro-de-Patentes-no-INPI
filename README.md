@@ -22,10 +22,10 @@ Os dois perfis acessam o glossário de despachos, que explica em linguagem simpl
 | Login e perfis | US01, US02, US03 | Pronto |
 | Cadastro e carteira de ativos | US04, US06, US07 | Pronto |
 | Edição de ativo | US05 | Em desenvolvimento |
-| Coleta da RPI | US08 | Download e leitura do XML prontos; agendamento semanal e botão "Processar agora" em desenvolvimento |
-| Cruzamento com os ativos | US09 | Pronto no back-end: grava os despachos, liga ao glossário e cria os alertas. Falta a rota que dispara o processamento |
-| Edições da RPI processadas | US10 | Em desenvolvimento |
-| Alertas por e-mail | US11 | Envio pronto; falta disparar os e-mails depois de cada processamento da RPI |
+| Coleta da RPI | US08 | Pronto no back-end: download e leitura do XML, rota "Processar agora" (`POST /api/rpi/process`) e agendamento semanal (desligado por padrão). Falta o botão "Processar agora" na tela |
+| Cruzamento com os ativos | US09 | Pronto: grava os despachos, liga ao glossário e cria os alertas. É disparado pela rota "Processar agora" e pelo agendamento |
+| Edições da RPI processadas | US10 | Pronto no back-end (`GET /api/rpi/editions`, só NIT). Falta a tela de edições da RPI |
+| Alertas por e-mail | US11 | Pronto: os e-mails saem depois de cada processamento manual que dá certo e no fim de cada execução do agendamento. O Render gratuito bloqueia as portas SMTP 25, 465 e 587 (ver "Publicação") |
 | Alertas no painel | US12 | Pronto: tela com filtros, prazo em destaque, "marcar como lido" e contador na barra superior |
 | Alerta para o autor vinculado | US13 | Pronto |
 | Linha do tempo do ativo | US14 | Em desenvolvimento |
