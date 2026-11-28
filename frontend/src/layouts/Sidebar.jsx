@@ -4,7 +4,7 @@ import { Icon } from '../components/ui/Icon'
 import { APP_NAME, INSTITUTION_SHORT } from '../config'
 
 // Itens com `soon` seguem a arquitetura de informação do protótipo, mas dependem
-// de etapas futuras (leitura da RPI, calendário de prazos, tarefas, relatórios).
+// de etapas futuras (calendário de prazos, tarefas, relatórios).
 const NAV_BY_ROLE = {
   NIT: {
     section: 'Acompanhamento',
@@ -73,7 +73,7 @@ export function Sidebar({ role, onNavigate }) {
 
       <div className="mt-auto rounded-lg bg-navy-active p-4 text-xs leading-[18px] font-semibold">
         <strong className="mb-0.5 block text-[13px] text-nav-ink-active">Coleta automática da RPI</strong>
-        A leitura semanal dos XMLs do INPI chega em uma próxima etapa.
+        Toda semana o sistema lê a RPI e avisa sobre os despachos dos processos cadastrados.
       </div>
     </nav>
   )
