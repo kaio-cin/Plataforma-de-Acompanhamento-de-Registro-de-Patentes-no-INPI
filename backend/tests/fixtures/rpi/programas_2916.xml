@@ -1,0 +1,37 @@
+<revista numero="2916" dataPublicacao="24/11/2026" diretoria="Programa">
+  <despacho>
+    <codigo>111</codigo>
+    <titulo>Despacho Anulado</titulo>
+    <processo-programa>
+      <numero inid="Np">BR 51 2026 009371-6</numero>
+      <titulo inid="54">ISMFM: Plataforma Integrada para Modelagem ISM e Fuzzy MICMAC</titulo>
+    </processo-programa>
+    <comentario inid="co">Anulado o despacho 742 publicado na RPI 2914 por ter sido indevido. .</comentario>
+  </despacho>
+  <despacho>
+    <codigo>709</codigo>
+    <titulo>Renúncia do Registro</titulo>
+    <processo-programa>
+      <numero inid="Np">BR 51 2026 010107-7</numero>
+      <titulo inid="54">Geolabor - Sistema de Gerenciamento de Informações Geotécnicas</titulo>
+    </processo-programa>
+  </despacho>
+  <despacho>
+    <codigo>730</codigo>
+    <titulo>Expedição do Certificado de Registro</titulo>
+    <processo-programa>
+      <numero inid="Np">BR 51 2026 004978-4</numero>
+      <titulo inid="54">UPSPRINTS</titulo>
+      <campoAplicacaoLista>
+        <campoAplicacao>
+          <codigo inid="Cp">IN-02</codigo>
+        </campoAplicacao>
+      </campoAplicacaoLista>
+      <tipoProgramaLista>
+        <tipoPrograma>
+          <codigo inid="Tp">AP-01</codigo>
+        </tipoPrograma>
+      </tipoProgramaLista>
+    </processo-programa>
+  </despacho>
+</revista>
