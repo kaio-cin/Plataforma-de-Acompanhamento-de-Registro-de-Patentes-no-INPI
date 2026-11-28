@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.models import Alert, Asset, AssetType, Dispatch, DispatchCode, RpiEdition, User, UserRole
-from app.services.alert_service import calculate_deadline, create_alerts_for
+from app.services.alert_service import calculate_deadline, create_alerts_for, remove_alerts_for_user_on_asset
 
 PUBLICACAO = date(2026, 11, 24)
 
@@ -296,3 +296,44 @@ def test_apagar_usuario_apaga_so_os_alertas_dele(
 
     restantes = db_session.scalars(select(Alert.user_id)).all()
     assert restantes == [users["nit"].id]
+
+
+# --- Remoção na troca de autor (US05) --------------------------------------------------------------------------------
+
+
+def test_remove_alertas_so_do_usuario_no_ativo(
+    db_session: Session, users: dict[str, User], assets: list[Asset], edition: RpiEdition
+) -> None:
+    # Dois despachos no ativo da autora e um em outro ativo também vinculado a ela.
+    assets[2].author_user = users["autora"]
+    db_session.commit()
+    exigencia = _code(db_session, requires_action=True, deadline_days=60)
+    no_ativo = [_dispatch(db_session, edition, assets[0], exigencia), _dispatch(db_session, edition, assets[0])]
+    em_outro_ativo = _dispatch(db_session, edition, assets[2])
+    for dispatch in [*no_ativo, em_outro_ativo]:
+        create_alerts_for(db_session, dispatch)
+    db_session.commit()
+
+    removidos = remove_alerts_for_user_on_asset(db_session, users["autora"].id, assets[0].id)
+
+    assert removidos == 2
+    restantes = {tuple(row) for row in db_session.execute(select(Alert.user_id, Alert.dispatch_id))}
+    assert restantes == {
+        (users["nit"].id, no_ativo[0].id),
+        (users["nit"].id, no_ativo[1].id),
+        (users["nit"].id, em_outro_ativo.id),
+        (users["autora"].id, em_outro_ativo.id),
+    }
+
+
+def test_remove_alertas_nao_faz_commit(
+    db_session: Session, users: dict[str, User], assets: list[Asset], edition: RpiEdition
+) -> None:
+    create_alerts_for(db_session, _dispatch(db_session, edition, assets[0]))
+    db_session.commit()
+
+    assert remove_alerts_for_user_on_asset(db_session, users["autora"].id, assets[0].id) == 1
+    assert _total_alerts(db_session) == 1
+    db_session.rollback()
+
+    assert _total_alerts(db_session) == 2

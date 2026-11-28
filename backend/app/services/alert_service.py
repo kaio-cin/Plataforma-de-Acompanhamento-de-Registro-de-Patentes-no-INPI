@@ -4,7 +4,7 @@ import logging
 from collections.abc import Sequence
 from datetime import date, timedelta
 
-from sqlalchemy import func, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import Alert, Dispatch, User, UserRole
@@ -171,3 +171,22 @@ def mark_as_read(db: Session, user: User, alert_id: int) -> Alert:
     alert.is_read = True
     db.commit()
     return alert
+
+
+def remove_alerts_for_user_on_asset(db: Session, user_id: int, asset_id: int) -> int:
+    """Apaga os alertas do usuário ligados a despachos do ativo e retorna quantos foram apagados.
+
+    Usada quando o autor é desvinculado do ativo (US05): ele deixa de ver os dados do ativo pelos
+    alertas. Alertas de outros usuários e de outros ativos não são tocados.
+
+    Não faz commit: quem chama grava a remoção junto com a edição do ativo, na mesma transação.
+    """
+    result = db.execute(
+        delete(Alert)
+        .where(
+            Alert.user_id == user_id,
+            Alert.dispatch_id.in_(select(Dispatch.id).where(Dispatch.asset_id == asset_id)),
+        )
+        .execution_options(synchronize_session="fetch")
+    )
+    return result.rowcount
