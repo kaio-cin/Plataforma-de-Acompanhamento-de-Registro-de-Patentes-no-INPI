@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.core.scheduler import build_scheduler
 from app.database.init_db import init_db
 from app.routes import alerts, assets, auth, dispatch_codes, health, rpi
 
@@ -15,7 +16,15 @@ from app.routes import alerts, assets, auth, dispatch_codes, health, rpi
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     # Garante que as tabelas existam antes de atender a primeira requisição.
     init_db()
-    yield
+    # Coleta semanal da RPI (US08), só com RPI_SCHEDULER_ENABLED=true.
+    scheduler = build_scheduler() if settings.rpi_scheduler_enabled else None
+    if scheduler is not None:
+        scheduler.start()
+    try:
+        yield
+    finally:
+        if scheduler is not None:
+            scheduler.shutdown(wait=False)
 
 
 def create_app(cors_origins: list[str] | None = None) -> FastAPI:
