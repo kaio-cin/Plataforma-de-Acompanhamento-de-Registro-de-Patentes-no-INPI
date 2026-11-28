@@ -1786,13 +1786,15 @@ _PROGRAMAS: tuple[DispatchCodeEntry, ...] = (
         "O pedido de registro do programa foi publicado. O texto da tabela oficial para este código está "
         "confuso; confira o complemento do despacho.",
     ),
-    # Prazo contado "da data da notificação", não "desta data".
+    # A tabela conta o prazo "da data da notificação"; confirmado em 28/11/2026 que a notificação é a própria
+    # publicação na RPI.
     _programa(
         "082",
         "Pedido em exigência devido a irregularidades",
         "O INPI encontrou irregularidades e parou o pedido de registro até que as exigências sejam atendidas ou "
-        "contestadas. O prazo é de 60 dias contados da data da notificação; confira no complemento.",
+        "contestadas. É preciso responder em até 60 dias da publicação.",
         requires_action=True,
+        deadline_days=60,
     ),
     _programa(
         "090",
