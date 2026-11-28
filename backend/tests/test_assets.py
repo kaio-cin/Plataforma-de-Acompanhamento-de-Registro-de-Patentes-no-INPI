@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models import Asset, AssetType, Dispatch, RpiEdition, User
+from app.services.alert_service import create_alerts_for
 from tests.conftest import auth_header
 
 NOVO_ATIVO = {
@@ -562,3 +563,169 @@ def test_edicao_com_integrity_error_no_commit_retorna_409(
     assert response.status_code == 409
     assert response.json() == {"detail": "Já existe um ativo cadastrado com o processo BR 10 2023 000001-1."}
     assert _gravado(db_session, assets[0].id) == antes
+
+
+# --- Edição e alertas do autor desvinculado (US05) --------------------------
+
+
+def _despacho_com_alertas(db_session: Session, ativo: Asset, numero_edicao: int) -> Dispatch:
+    """Despacho do ativo numa edição nova, já com os alertas do NIT e do autor vinculado."""
+    edition = RpiEdition(number=numero_edicao, publication_date=date(2026, 11, 24))
+    dispatch = Dispatch(
+        edition=edition,
+        asset=ativo,
+        process_number=ativo.process_number,
+        code="6.1",
+        description="Exigência técnica",
+        publication_date=edition.publication_date,
+    )
+    db_session.add(dispatch)
+    create_alerts_for(db_session, dispatch)
+    db_session.commit()
+    return dispatch
+
+
+def _alertas_por_ativo(client: TestClient, email: str) -> list[int]:
+    """asset_id de cada alerta do usuário, como a rota de alertas devolve."""
+    return sorted(item["asset_id"] for item in client.get("/api/alerts/", headers=auth_header(client, email)).json())
+
+
+def _nao_lidos(client: TestClient, email: str) -> int:
+    return client.get("/api/alerts/unread-count", headers=auth_header(client, email)).json()["count"]
+
+
+def test_edicao_alertas_troca_de_autor_remove_so_os_do_antigo_no_ativo(
+    client: TestClient, db_session: Session, assets, users
+) -> None:
+    # A autora também está vinculada a assets[2], para ter alertas em outro ativo.
+    assets[2].author_user = users["autora"]
+    db_session.commit()
+    _despacho_com_alertas(db_session, assets[0], 2901)
+    _despacho_com_alertas(db_session, assets[2], 2902)
+    assert _alertas_por_ativo(client, AUTORA) == sorted([assets[0].id, assets[2].id])
+    assert _nao_lidos(client, AUTORA) == 2
+
+    response = client.put(
+        f"/api/assets/{assets[0].id}", json=_corpo(author_email=OUTRO_AUTOR), headers=auth_header(client, NIT)
+    )
+
+    assert response.status_code == 200
+    assert _alertas_por_ativo(client, AUTORA) == [assets[2].id]
+    assert _nao_lidos(client, AUTORA) == 1
+    assert _alertas_por_ativo(client, NIT) == sorted([assets[0].id, assets[2].id])
+    assert _alertas_por_ativo(client, OUTRO_AUTOR) == []
+
+
+@pytest.mark.parametrize("email", [None, ""], ids=["null", "vazio"])
+def test_edicao_alertas_remocao_do_autor_remove_os_dele(
+    client: TestClient, db_session: Session, assets, email: str | None
+) -> None:
+    _despacho_com_alertas(db_session, assets[0], 2901)
+
+    response = client.put(
+        f"/api/assets/{assets[0].id}", json=_corpo(author_email=email), headers=auth_header(client, NIT)
+    )
+
+    assert response.status_code == 200
+    assert _alertas_por_ativo(client, AUTORA) == []
+    assert _nao_lidos(client, AUTORA) == 0
+    assert _alertas_por_ativo(client, NIT) == [assets[0].id]
+
+
+def test_edicao_alertas_mesmo_autor_mantem_os_alertas_e_a_leitura(
+    client: TestClient, db_session: Session, assets
+) -> None:
+    _despacho_com_alertas(db_session, assets[0], 2901)
+    _despacho_com_alertas(db_session, assets[0], 2902)
+    headers_autora = auth_header(client, AUTORA)
+    primeiro = client.get("/api/alerts/", headers=headers_autora).json()[0]["id"]
+    assert client.patch(f"/api/alerts/{primeiro}/read", headers=headers_autora).status_code == 200
+    antes = {item["id"]: item["is_read"] for item in client.get("/api/alerts/", headers=headers_autora).json()}
+
+    response = client.put(f"/api/assets/{assets[0].id}", json=_corpo(), headers=auth_header(client, NIT))
+
+    assert response.status_code == 200
+    depois = {item["id"]: item["is_read"] for item in client.get("/api/alerts/", headers=headers_autora).json()}
+    assert depois == antes
+    assert sorted(antes.values()) == [False, True]
+    assert _nao_lidos(client, AUTORA) == 1
+
+
+@pytest.mark.parametrize("email", [AUTORA, None], ids=["troca", "remocao"])
+def test_edicao_alertas_autor_antigo_com_perfil_nit_nao_perde_alertas(
+    client: TestClient, db_session: Session, assets, users, email: str | None
+) -> None:
+    # Dado antigo: um usuário NIT gravado direto como autor vinculado.
+    assets[2].author_user = users["nit"]
+    db_session.commit()
+    _despacho_com_alertas(db_session, assets[2], 2901)
+    corpo = {
+        "title": "Patente sem autor vinculado",
+        "asset_type": "Patente",
+        "process_number": "BR 10 2022 000003-3",
+        "deposit_date": "2022-08-01",
+        "status": "Deferida",
+        "authors": "Equipe",
+        "author_email": email,
+    }
+
+    response = client.put(f"/api/assets/{assets[2].id}", json=corpo, headers=auth_header(client, NIT))
+
+    assert response.status_code == 200
+    assert _alertas_por_ativo(client, NIT) == [assets[2].id]
+    assert _nao_lidos(client, NIT) == 1
+
+
+@pytest.mark.parametrize(
+    ("mudanca", "status_esperado"),
+    [
+        ({"process_number": "BR 51 2024 000002-2"}, 409),
+        ({"process_number": "BR 10 2023 000009-9"}, 409),
+        ({"author_email": "naoexiste@teste.edu.br"}, 422),
+        ({"deposit_date": (date.today() + timedelta(days=1)).isoformat()}, 422),
+    ],
+    ids=["duplicado", "bloqueado_por_despacho", "autor_inexistente", "data_no_futuro"],
+)
+def test_edicao_alertas_put_que_falha_mantem_os_alertas(
+    client: TestClient, db_session: Session, assets, users, mudanca: dict[str, object], status_esperado: int
+) -> None:
+    _despacho_com_alertas(db_session, assets[0], 2901)
+    # Todos tentam trocar o autor; o autor_inexistente troca para um e-mail que não existe.
+    corpo = _corpo(**{"author_email": OUTRO_AUTOR, **mudanca})
+
+    response = client.put(f"/api/assets/{assets[0].id}", json=corpo, headers=auth_header(client, NIT))
+
+    assert response.status_code == status_esperado
+    assert _gravado(db_session, assets[0].id)["author_user_id"] == users["autora"].id
+    assert _alertas_por_ativo(client, AUTORA) == [assets[0].id]
+    assert _nao_lidos(client, AUTORA) == 1
+
+
+def test_edicao_alertas_falha_real_no_commit_mantem_vinculo_e_alertas(
+    client: TestClient, db_session: Session, users
+) -> None:
+    # Gêmeos antigos: mudar o primeiro para o formato exato do segundo só falha no UNIQUE do banco,
+    # depois que os alertas da autora já foram apagados na transação.
+    primeiro = _ativo_antigo(db_session, "BR 10 2020 000050-5", title="Primeiro gêmeo")
+    _ativo_antigo(db_session, "BR10.2020.000050-5", title="Segundo gêmeo")
+    primeiro.author_user = users["autora"]
+    db_session.commit()
+    _despacho_com_alertas(db_session, primeiro, 2901)
+    corpo = {
+        "title": "Não deve ser gravado",
+        "asset_type": "Patente",
+        "process_number": "BR10.2020.000050-5",
+        "deposit_date": "2020-06-01",
+        "status": "Em exame",
+        "authors": "Equipe",
+        "author_email": OUTRO_AUTOR,
+    }
+
+    response = client.put(f"/api/assets/{primeiro.id}", json=corpo, headers=auth_header(client, NIT))
+
+    assert response.status_code == 409
+    gravado = _gravado(db_session, primeiro.id)
+    assert gravado["author_user_id"] == users["autora"].id
+    assert gravado["title"] == "Primeiro gêmeo"
+    assert _alertas_por_ativo(client, AUTORA) == [primeiro.id]
+    assert _alertas_por_ativo(client, OUTRO_AUTOR) == []
