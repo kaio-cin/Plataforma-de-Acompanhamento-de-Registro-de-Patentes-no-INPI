@@ -242,3 +242,7 @@ Um pedido passa pelas camadas nesta ordem: `routes` → `schemas` → `services`
 | Guilherme | Edição de ativo, linha do tempo e tela de edições da RPI |
 | Kaio | Códigos de despacho, glossário, publicação e documentação |
 | Breno | Qualidade, testes ponta a ponta e revisão |
+
+## Licença
+
+Este projeto é distribuído sob a **Apache License 2.0**. O texto completo está no arquivo [`LICENSE`](LICENSE).
