@@ -56,10 +56,11 @@ def test_descricao_oficial_e_o_titulo_publicado_na_rpi() -> None:
 
 
 @pytest.mark.parametrize("asset_type", list(AssetType))
-def test_fonte_de_cada_tipo_tem_titulo_e_data_de_consulta(asset_type: AssetType) -> None:
+def test_fonte_de_cada_tipo_tem_titulo_url_e_data_de_consulta(asset_type: AssetType) -> None:
     fonte = FONTE[asset_type]
 
     assert fonte.titulo
+    assert fonte.url and fonte.url.startswith("https://revistas.inpi.gov.br/")
     assert isinstance(fonte.data_consulta, date)
 
 
@@ -77,7 +78,7 @@ def test_fonte_de_cada_tipo_tem_titulo_e_data_de_consulta(asset_type: AssetType)
         (PATENTE, "15.11", False, None),  # alteração de classificação (fixture)
         (PROGRAMA, "092", True, 60),  # alteração de nome em exigência
         (PROGRAMA, "115", True, 30),  # recurso de terceiro contra o deferimento: contrarrazões em 30 dias
-        (PROGRAMA, "082", True, None),  # prazo contado da notificação, não "desta data"
+        (PROGRAMA, "082", True, 60),  # "da data da notificação": a notificação é a publicação (confirmado)
         (PROGRAMA, "730", False, None),  # certificado expedido (fixture)
     ],
 )
