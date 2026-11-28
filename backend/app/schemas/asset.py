@@ -82,3 +82,18 @@ class AssetRead(AssetBase):
     id: int
     author_user_id: int | None
     author_email: EmailStr | None
+
+
+class AssetUpdate(AssetCreate):
+    """Dados da edição de um ativo (US05): substitui todos os campos, com as mesmas regras do cadastro.
+
+    author_email é obrigatório para não remover o autor sem querer: quem esquecer o campo recebe 422.
+    null ou "" removem o vínculo de propósito.
+    """
+
+    author_email: EmailStr | None = Field(
+        description=(
+            "E-mail de um usuário AUTOR já cadastrado. Obrigatório: envie null ou \"\" para remover o autor vinculado."
+        ),
+        examples=["fernanda.costa@instituicao.edu.br"],
+    )
